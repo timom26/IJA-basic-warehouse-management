@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Warehouse management system" default="run">
+    <path id="class.path">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="dest"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build" includeantruntime="false">
+            <modulepath path="lib/lib"/>
+            <compilerarg line="--add-modules javafx.controls,javafx.fxml"/>
+            <classpath refid="class.path"/>
+        </javac>
+        <mkdir dir="dest"/>
+        <jar destfile="dest/PEPELA.jar" basedir="build">
+            <manifest>
+                <attribute name="Main-Class" value="sample.Main"/>
+            </manifest>
+            <zipgroupfileset dir="lib" includes="**/*.jar"/>
+            <fileset file="src/sample/sample.fxml"/>
+        </jar>
+    </target>
+
+    <target name="run" depends="compile">
+        <java jar="dest/PEPELA.jar" fork="true">
+            <modulepath path="lib/lib"/>
+            <jvmarg line="--add-modules javafx.controls,javafx.fxml"/>
+        </java>
+    </target>
+</project>
