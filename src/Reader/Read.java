@@ -24,7 +24,7 @@ public class Read {
     {
         try
         {
-            File file=new File("warehouse.txt");
+            File file=new File("data/warehouse.txt");
             Scanner sc = new Scanner(file);     //file to be scanned
             // while (sc.hasNext())        //returns true if and only if scanner has another token
             int rows = Integer.parseInt(sc.next());
@@ -59,7 +59,7 @@ public class Read {
     {
         try
         {
-            File file=new File("stock.txt");
+            File file=new File("data/stock.txt");
             Scanner sc = new Scanner(file);     //file to be scanned
             while (sc.hasNext()){
                 int rows = Integer.parseInt(sc.next());
