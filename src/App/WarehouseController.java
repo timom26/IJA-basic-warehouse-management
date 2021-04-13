@@ -5,7 +5,7 @@
  * @brief assignment of java application for basic warehouse management system
  */
 
-package sample;
+package App;
 
 import Reader.Read;
 import Reader.WarehouseStruct;

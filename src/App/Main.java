@@ -5,7 +5,7 @@
  * @brief assignment of java application for basic warehouse management system
  */
 
-package sample;
+package App;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,8 +20,8 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setController(new Controller());
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 640, 400));
+        primaryStage.setTitle("Warehouse");
+        primaryStage.setScene(new Scene(root, 640, 545));
         primaryStage.show();
     }
 
