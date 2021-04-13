@@ -20,7 +20,7 @@
         <delete dir="doc"/>
     </target>
 
-    <target name="compile" depends="clean, get-libs,generate-javadoc">
+    <target name="compile" depends="clean, get-libs">
         <mkdir dir="build"/>
         <javac srcdir="src" destdir="build" includeantruntime="false">
             <modulepath path="lib/lib"/>
@@ -35,6 +35,7 @@
             <zipgroupfileset dir="lib" includes="**/*.jar"/>
             <fileset file="data/sample.fxml"/>
         </jar>
+        <antcall target="generate-javadoc"/>
     </target>
 
     <target name="run">
@@ -45,7 +46,8 @@
     </target>
 
     <target name="generate-javadoc">
-        <delete>
+
+        <delete failonerror="false">
             <fileset dir="doc" includes="**/*"/>
         </delete>
         <mkdir dir="doc"/>
