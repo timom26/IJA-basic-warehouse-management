@@ -39,7 +39,18 @@ public class Item {
         return ref;
         //return null;
     }
+    public String getName(){
+        return name;
+    }
+    public LocalDate getTimestamp(){
+        return date;
+    }
 
+
+    /**
+     * remove items
+     * @return true if sucessfully removed
+     */
     public boolean sell() {
         if(ref != null){
             return ref.remove(this);
