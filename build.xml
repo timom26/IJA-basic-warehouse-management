@@ -17,9 +17,10 @@
     <target name="clean">
         <delete dir="build"/>
         <delete dir="dest"/>
+        <delete dir="doc"/>
     </target>
 
-    <target name="compile" depends="clean, get-libs">
+    <target name="compile" depends="clean, get-libs,generate-javadoc">
         <mkdir dir="build"/>
         <javac srcdir="src" destdir="build" includeantruntime="false">
             <modulepath path="lib/lib"/>
@@ -36,10 +37,35 @@
         </jar>
     </target>
 
-    <target name="run" depends="compile">
+    <target name="run">
         <java jar="dest/PEPELA.jar" fork="true">
             <modulepath path="lib/lib"/>
             <jvmarg line="--add-modules javafx.controls,javafx.fxml"/>
         </java>
+    </target>
+
+    <target name="generate-javadoc">
+        <delete>
+            <fileset dir="doc" includes="**/*"/>
+        </delete>
+        <mkdir dir="doc"/>
+        <mkdir dir="doc/src"/>
+        <javadoc packagenames="sample,reader,store"
+                 sourcepath="src"
+                 destdir="doc/src"
+                 classpathref="class.path"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="IJA - Task 2 - documentation">
+            <doctitle><![CDATA[<h1>Project documentation - java</h1>]]></doctitle>
+            <bottom>
+                <![CDATA[2021, Faculty of computer science, Brno university of technology, Czechia.]]>
+            </bottom>
+            <group title="sample" packages="sample"/>
+            <group title="reader" packages="reader"/>
+            <group title="store"  packages="store" />
+        </javadoc>
+        <echo message="java doc should be generated now!" />
     </target>
 </project>
