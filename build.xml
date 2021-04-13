@@ -7,12 +7,19 @@
         </fileset>
     </path>
 
+
+    <target name="get-libs">
+        <exec executable="/bin/bash" dir="lib">
+            <arg value="get-libs.sh"/>
+        </exec>
+    </target>
+
     <target name="clean">
         <delete dir="build"/>
         <delete dir="dest"/>
     </target>
 
-    <target name="compile" depends="clean">
+    <target name="compile" depends="clean, get-libs">
         <mkdir dir="build"/>
         <javac srcdir="src" destdir="build" includeantruntime="false">
             <modulepath path="lib/lib"/>
