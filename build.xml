@@ -18,6 +18,7 @@
         <delete dir="build"/>
         <delete dir="dest"/>
         <delete dir="doc"/>
+        <delete dir="lib/lib"/>
     </target>
 
     <target name="compile" depends="clean, get-libs">

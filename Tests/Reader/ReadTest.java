@@ -18,6 +18,5 @@ public class ReadTest {
         if(alo){
             boolean hell = Read.ReadStock(amen, goods);
         }
-
     }
 }
