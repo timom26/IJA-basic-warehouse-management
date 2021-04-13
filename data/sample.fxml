@@ -59,7 +59,7 @@
             <children>
                 <Button layoutX="294.0" layoutY="336.0" mnemonicParsing="false" onAction="#buttonLaunch" text="Launch" />
                 <Pane fx:id="warehousePane" layoutX="15.0" layoutY="14.0" prefHeight="310.0" prefWidth="610.0" style="-fx-border-color: #000000;" />
-               <TextArea layoutX="42.0" layoutY="368.0" prefHeight="133.0" prefWidth="559.0" text="-&gt; Po kliknutí na tlačítko &quot;Launch&quot; sa načíta podklad skladu a zároveň aj obsah skladu z textových &#10;súborov warehouse.txt a stock.txt miestnených v adresári data&#10;-&gt; Po najetí kurzom myši na regál sa vypíše vo vyskakovacom okne jeho obsah, prípadne ak je &#10;prázdny vypíše sa &quot;Empty&quot;&#10;-&gt; Funguje aj pridávanie prekážok klinutím na štvorčeky vyznačené slabo-modrou čiarou, funguje&#10;aj hromadné uzavretie uličky, treba držať Shift a kliknúť na začiatok a koniec uličky, ktorú chcete&#10;uzavrieť" />
+               <TextArea editable="false" layoutX="42.0" layoutY="368.0" prefHeight="133.0" prefWidth="559.0" text="-&gt;  Po kliknutí na tlačítko &quot;Launch&quot; sa načíta podklad skladu a zároveň aj obsah skladu z textových &#10;súborov warehouse.txt a stock.txt miestnených v adresári data&#10;-&gt; Po najetí kurzom myši na regál sa vypíše vo vyskakovacom okne jeho obsah, prípadne ak je &#10;prázdny vypíše sa &quot;Empty&quot;&#10;-&gt; Funguje aj pridávanie prekážok klinutím na štvorčeky vyznačené slabo-modrou čiarou, funguje&#10;aj hromadné uzavretie uličky, treba držať Shift a kliknúť na začiatok a koniec uličky, ktorú chcete&#10;uzavrieť" />
             </children>
         </AnchorPane>
     </children>

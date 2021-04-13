@@ -23,7 +23,7 @@
     <target name="clean">
         <delete dir="build"/>
         <delete dir="dest"/>
-        <delete dir="doc"/>
+        <delete dir="doc/src"/>
         <delete dir="lib/lib"/>
     </target>
 
@@ -55,7 +55,7 @@
     <target name="generate-javadoc">
 
         <delete failonerror="false">
-            <fileset dir="doc" includes="**/*"/>
+            <fileset dir="doc/src" includes="**/*"/>
         </delete>
         <mkdir dir="doc"/>
         <mkdir dir="doc/src"/>

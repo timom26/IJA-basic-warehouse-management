@@ -1,2 +1,3 @@
 0 0 Zidle 10
 0 1 Zidle 12
+2 3 Pohovky 15
