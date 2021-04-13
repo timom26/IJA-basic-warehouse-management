@@ -29,9 +29,9 @@
             <classpath refid="class.path"/>
         </javac>
         <mkdir dir="dest"/>
-        <jar destfile="dest/PEPELA.jar" basedir="build">
+        <jar destfile="dest/ija-app.jar" basedir="build">
             <manifest>
-                <attribute name="Main-Class" value="sample.Main"/>
+                <attribute name="Main-Class" value="App.Main"/>
             </manifest>
             <zipgroupfileset dir="lib" includes="**/*.jar"/>
             <fileset file="data/sample.fxml"/>
@@ -40,7 +40,7 @@
     </target>
 
     <target name="run">
-        <java jar="dest/PEPELA.jar" fork="true">
+        <java jar="dest/ija-app.jar" fork="true">
             <modulepath path="lib/lib"/>
             <jvmarg line="--add-modules javafx.controls,javafx.fxml"/>
         </java>
