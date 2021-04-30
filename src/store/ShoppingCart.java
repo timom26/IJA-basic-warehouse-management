@@ -5,6 +5,7 @@
  * @brief assignment of java application for basic warehouse management system
  */
 package store;
+
 import Reader.WarehouseStruct;
 
 import java.awt.*;
@@ -32,7 +33,7 @@ public class ShoppingCart {
     //#############  class functions ###########################
     //#####  item manipulation  ############
     /**
-     * Fills the cart by any item of a given goods-type from a given shelf
+     * @brief Fills the cart by any item of a given goods-type from a given shelf
      * @param shelf shelf to take item from
      * @param goods goodstype to take
      * @return true if successful, false if full cart or no item of type in shelf
@@ -50,7 +51,7 @@ public class ShoppingCart {
     }
 
     /**
-     * Takes out item of a given type to the given shelf
+     * @brief Takes out item of a given type to the given shelf
      * @param shelf shelf to pace item onto
      * @param goods goodstype of item to be placed
      * @return true if successful,false if no item of the given type to move to shelf
@@ -66,7 +67,7 @@ public class ShoppingCart {
     }
 
     /**
-     * Function Empties all of its items into the given shelf. Useful when retrieving items from warehouse
+     * @brief Function Empties all of its items into the given shelf. Useful when retrieving items from warehouse
      * @param shelf shelf where it needs to be emptied
      * @return true if sucessful
      */
@@ -77,7 +78,7 @@ public class ShoppingCart {
         }
     }
     /**
-     * Checks if the cart contains any item with given goodstype
+     * @brief Checks if the cart contains any item with given goodstype
      * @param goods goodstype to match
      * @return true if found, false if not
      */
@@ -105,7 +106,7 @@ public class ShoppingCart {
 
 
 
-    /**function returns a length of route to a given shelf from current position
+    /** @brief function returns a length of route to a given shelf from current position
      * @param end_x coord x of the target shelf
      * @param end_y coord y of the target shelf
      * @return integer - length of route to a given shelf
@@ -135,7 +136,7 @@ public class ShoppingCart {
         }
 
     }
-    /**function generates the shortest route to a given shelf and returns
+    /** @brief function generates the shortest route to a given shelf and returns
      * it as a list of 2d points from current position to ending position
      * @param end_x coord x of the target shelf
      * @param end_y coord y of the target shelf
@@ -235,18 +236,36 @@ public class ShoppingCart {
         return pointList;
     }
 
-    /**function gets route to a shelf, and then makes the cart go to it in real time
+    /**@brief function gets route to a shelf, and then makes the cart go to it in real time
      * @param end_x coord x of the target shelf
      * @param end_y coord y of the target shelf
      * @return None
      */
     public void goTo(int end_x,int end_y){
+
         List<java.awt.Point> coordList = getCoords(end_x,end_y);
-        for (int i = 0; i < coordList.size();i++){
-            System.out.print(coordList.get(i).x+ " " + coordList.get(i).y + " ");
+
+        List<java.awt.Point> conflictList = this.warehouse.findConflicts(coordList);
+
+
+        //first, test blockage of new target
+        if (!conflictList.isEmpty()){
+
+            Point point_1 = new Point(end_x,end_y);
+
+
+
+        }
+
+
+        //if solved problem or conflict list empty, walk there
+        for (int i = 0; i < coordList.size(); i++) {
+            System.out.print(coordList.get(i).x + " " + coordList.get(i).y + " ");
             this.coord_x = coordList.get(i).x;
             this.coord_y = coordList.get(i).y;
         }
         System.out.println("");
     }
+
+
 }

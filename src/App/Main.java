@@ -36,7 +36,8 @@ public class Main extends Application {
         warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
 
 
-        ShoppingCart cart1 = new ShoppingCart(warehouse1,2,0);
+        ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
+        warehouse1.
         System.out.println("###");
         cart1.goTo(1,0);
         System.out.println("###");
