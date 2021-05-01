@@ -12,13 +12,9 @@ import store.Shelf;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Read {
-    //private int rows = 0;
-    //private int Scols = 0;
 
     /**
      * @brief Function reads 'warehouse.txt' to get dimensions of the warehouse.
@@ -102,9 +98,74 @@ public class Read {
 
 
 
-                }while(sc.hasNext(",")); // sanity check
+                }while(sc.hasNext(",") && sc.next().contentEquals(",")); // sanity check
 
             }
+
+            return true;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    //TODO accept as an agrument only warehouse struct
+    public static boolean ReadRequests(List wareHouse, List allGoods, List Indexes, int rowsMax, int colsMax)
+    {
+        //TODO here we should already consider cart postion and choose next shelf to pick from accordingly
+        try
+        {
+            File file = new File("data/requests.txt");
+            Scanner sc = new Scanner(file);     //file to be scanned
+            CartStruct AllCarts = new CartStruct();
+            AllCarts.Reset();
+
+            while (sc.hasNext()){
+                int trolleyID = Integer.parseInt(sc.next()); // id of trolley for which orders are made
+                AllCarts.AddOrder(trolleyID);
+
+                String productName;
+                do{
+                    productName = sc.next();
+
+                    String finalProductName = productName;
+                    //Optional hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst();
+                    Object hell;
+
+                    if(allGoods.stream().anyMatch(o -> (((Goods) o).getName().equals(finalProductName)))){
+                        hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst().get();
+                        System.out.println(((Goods) hell).getName());
+                        System.out.println("бутылочка");
+
+                        for(int row = 0; row <rowsMax; row++ ){
+                            for(int coll = 0; coll < colsMax; coll++ ){
+                                if(((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) hell))){
+                                    AllCarts.AddGoodsIndexToCart(trolleyID, row, coll, productName);
+                                    //return true; //TODO return list or struct or what else
+                                    // TODO but Really I should make a Class for this thing
+                                };
+                            }
+                        }
+
+                    }
+                    else {
+                        System.out.println("лютики");
+                    }
+
+                }while(sc.hasNext(",") && sc.next().contentEquals(",")); // sanity check
+
+                //Debug code
+                /*CartStruct.Trolley.targetIndex aga = AllCarts.GetCart(trolleyID).GetIndex("Zidle");
+
+                // print info about index
+                String hah = aga.GetIndexName();
+                System.out.println(hah);*/
+
+            }
+
 
             return true;
         }

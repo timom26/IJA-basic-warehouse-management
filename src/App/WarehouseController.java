@@ -9,6 +9,10 @@ package App;
 
 import Reader.Read;
 import Reader.WarehouseStruct;
+import store.ShoppingCart;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -32,6 +36,10 @@ public class WarehouseController {
     private static List<Rectangle> rects;
     private static List<Rectangle> ObstacleGrid;
 
+    private static List<Rectangle> Trolleys;
+    private static Rectangle _parkingArea;
+    private static Rectangle _resuplyArea;
+
     private static double rectHeight;
     private static double rectWidth;
 
@@ -40,18 +48,55 @@ public class WarehouseController {
     private static double Liney;
 
     private static int step;
+    private static boolean RuntimePropsSet = false;
 
+
+    public static void ResizeAll(int Res, Pane warehousePane){
+        //warehousePane.getChildren().removeAll(rects);
+        //warehousePane.getChildren().removeAll(ObstacleGrid);
+        if(Res == 1){
+            for (Rectangle r :rects) {
+                //r.resizeRelocate();
+                //r.getParent().lay
+                r.setX(r.getX()+20);
+                r.setY(r.getY()+20);
+            }
+
+            for (Rectangle r :ObstacleGrid){
+                r.setX(r.getX()+10);
+                //r.resize(30,30);
+            }
+        }
+        else {
+            for (Rectangle r :rects) {
+                //r.resizeRelocate();
+                //r.getParent().lay
+                r.setX(r.getX()-20);
+                r.setY(r.getY()-20);
+            }
+
+            for (Rectangle r :ObstacleGrid){
+                r.setX(r.getX()-10);
+                //r.resize(30,30);
+            }
+
+        }
+
+
+        //warehousePane.getChildren().addAll(rects);
+        //warehousePane.getChildren().addAll(ObstacleGrid);
+    }
 
     public static void PaneDraw(int rows, int cols, Pane warehousePane){
 
-//        for (Rectangle r :rects) {
-//
-//        }
+        CreateResuplyArea(warehousePane);
+        CreateTrolleys(warehousePane, 5);
+
         if(rects != null)
             warehousePane.getChildren().removeAll(rects);
         rects = new ArrayList<Rectangle> ();
 
-        double canvasHeight = warehousePane.getHeight();
+        double canvasHeight = warehousePane.getHeight() - 20;
         double canvasWidth = warehousePane.getWidth();
 
         step = 20;
@@ -68,15 +113,13 @@ public class WarehouseController {
         boolean even = true;
         for (double x = step; x < maxX; x += (even ? step + rectWidth : rectWidth)){
             for (double y = step; y < maxY; y += rectHeight){
-                Rectangle novinka = new Rectangle(x, y, rectWidth, rectHeight);
-                novinka.setFill(Color.TRANSPARENT);
-                novinka.setStroke(Color.BLACK);
-//                novinka.getStrokeDashArray().addAll(1.0, 4.0);
-//                novinka.setStrokeDashOffset(2);
-                novinka.setStrokeWidth(2);
+                Rectangle newShelf = new Rectangle(x, y, rectWidth, rectHeight);
+                newShelf.setFill(Color.TRANSPARENT);
+                newShelf.setStroke(Color.BLACK);
+                newShelf.setStrokeWidth(2);
 
-                rects.add(novinka);
-                warehousePane.getChildren().add(novinka);
+                rects.add(newShelf);
+                warehousePane.getChildren().add(newShelf);
             }
             even = !even;
         }
@@ -84,7 +127,6 @@ public class WarehouseController {
         System.out.println(rows);
         System.out.println(cols);
     }
-
 
     private static void SetGridProperties(Rectangle grid){
         grid.setFill(Color.TRANSPARENT);
@@ -113,7 +155,7 @@ public class WarehouseController {
             warehousePane.getChildren().removeAll(ObstacleGrid);
         ObstacleGrid = new ArrayList<Rectangle> ();
 
-        double canvasHeight = warehousePane.getHeight();
+        double canvasHeight = warehousePane.getHeight() - 20;
         double canvasWidth = warehousePane.getWidth();
 
         double maxX = canvasWidth - step;
@@ -160,32 +202,119 @@ public class WarehouseController {
             }
         }
 
-        warehousePane.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(castLine && event.isShiftDown()){
-                    Line alo = new Line(Linex,Liney,event.getX(), event.getY());
-                    warehousePane.getChildren().add(alo);
-                    for (Rectangle r: ObstacleGrid) {
-                        if(r.getBoundsInParent().intersects(alo.getBoundsInParent()))
-                            if (r.getFill().equals(Color.TRANSPARENT))
-                                r.setFill(Color.BLACK);
-                            else
-                                r.setFill(Color.TRANSPARENT);
+        // Set this property only once, warehousePane exists throughout the whole program life so
+        // without check, we would set property multiple times and get not desired behavior
+        if(!RuntimePropsSet){
+            warehousePane.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    if(castLine && event.isShiftDown()){
+                        Line alo = new Line(Linex,Liney,event.getX(), event.getY());
+                        warehousePane.getChildren().add(alo);
+                        for (Rectangle r: ObstacleGrid) {
+                            if(r.getBoundsInParent().intersects(alo.getBoundsInParent()))
+                                if (r.getFill().equals(Color.TRANSPARENT))
+                                    r.setFill(Color.BLACK);
+                                else
+                                    r.setFill(Color.TRANSPARENT);
+                        }
+                        castLine = false;
+                        warehousePane.getChildren().remove(alo);
                     }
-                    castLine = false;
-                    warehousePane.getChildren().remove(alo);
-                }
-                else if(event.isShiftDown()){
-                    Linex = event.getX();
-                    Liney = event.getY();
-                    castLine = true;
-                }
+                    else if(event.isShiftDown()){
+                        Linex = event.getX();
+                        Liney = event.getY();
+                        castLine = true;
+                    }
 
-            }
-        });
+                }
+            });
+            RuntimePropsSet = true;
+
+        }
+
 
     }
+
+    public static void CreateResuplyArea(Pane warehousePane){
+        if(_resuplyArea != null)
+            warehousePane.getChildren().remove(_resuplyArea);
+        if(_parkingArea != null)
+            warehousePane.getChildren().remove(_parkingArea);
+
+        double canvasHeight = warehousePane.getHeight();
+        double canvasWidth = warehousePane.getWidth();
+
+        Rectangle ResuplyArea = new Rectangle(canvasWidth-70, canvasHeight-20, 70, 20);
+        ResuplyArea.setFill(Color.GREY);
+        _resuplyArea = ResuplyArea;
+        warehousePane.getChildren().add(_resuplyArea);
+
+
+        Rectangle ParkingArea = new Rectangle(0, canvasHeight-20, 300, 20);
+        ParkingArea.setFill(Color.GREY);
+        _parkingArea = ParkingArea;
+        warehousePane.getChildren().add(_parkingArea);
+    }
+
+    public static void CreateTrolleys(Pane warehousePane, int howMany){
+        if(howMany > 10){
+            return; //we don't allow more than 10 trolleys
+        }
+        if(Trolleys != null){
+            warehousePane.getChildren().remove(Trolleys);
+        }
+        Trolleys = new ArrayList<Rectangle>();
+        double canvasHeight = warehousePane.getHeight();
+        double canvasWidth = warehousePane.getWidth();
+
+        int x = 5;
+
+        for(int counter = 0; counter <= howMany; counter++ ){
+            Rectangle trolley = new Rectangle(x, canvasHeight-15, 10, 10);
+            trolley.setFill(Color.YELLOW);
+
+            Trolleys.add(trolley);
+            warehousePane.getChildren().add(trolley);
+
+            x += 25;
+        }
+    }
+
+
+    /*
+    systém obsahuje vlastní hodiny, které lze nastavit na výchozí hodnotu a různou rychlost
+    po načtení mapy a obsahu skladu začne systém zobrazovat zpracování jednotlivých požadavků (způsob zobrazení je na vaší invenci, postačí značka, kolečko, ...)
+    symbol vozíku se postupně posunuje podle aktuálního času a požadavků (aktualizace zobrazení může být např. každých N sekund); pohyb spoje na trase je tedy simulován
+    po najetí/kliknutí na symbol vozíku se zvýrazní trasa v mapě a zobrazí jeho aktuální náklad
+     */
+
+
+    public static void MoveTrolley(int trolleyId, int x, int y){
+        if(Trolleys.size() < trolleyId)
+            return;
+        Rectangle movable = Trolleys.get(trolleyId);
+        movable.setX(movable.getX()+x);
+        movable.setY(movable.getY()+y);
+    }
+
+
+//    public static void MoveTrolley(int trolleyId, int row, int col, ShoppingCart trolley) throws InterruptedException {
+//        ClockController.SetTime(0);
+////        if(Trolleys.size() < trolleyId)
+////            return;
+////        Rectangle movable = Trolleys.get(trolleyId);
+////
+////        List<java.awt.Point> coordList = trolley.getCoords(col, row);
+////        for(java.awt.Point coord : coordList){
+////
+////            //movable.setX(movable.getX());
+////            movable.setY(movable.getY()-20);
+////
+////        }
+////        movable = null;
+//
+//    }
 
 
     public static void AddToolTip(WarehouseStruct depot){
