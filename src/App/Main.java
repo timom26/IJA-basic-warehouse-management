@@ -37,31 +37,12 @@ public class Main extends Application {
 
 
         ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
-        warehouse1.
+        warehouse1.addBlockage(0,1);
         System.out.println("###");
-        cart1.goTo(1,0);
+        cart1.goTo(0,9);
         System.out.println("###");
-
-        cart1.goTo(1,5);
-        System.out.println("###");
-
-        cart1.goTo(2,5);
-        System.out.println("###");
-
-        cart1.goTo(2,0);
-        System.out.println("###");
-        cart1.goTo(1,3);
-        System.out.println("###");
-
-
-
         cart1.goTo(0,0);
-        System.out.println(cart1.routeLength(1,0));
-        System.out.println(cart1.routeLength(1,1));
-        System.out.println(cart1.routeLength(2,0));
-        System.out.println(cart1.routeLength(2,1));
-        System.out.println(cart1.routeLength(0,9));
-
+        System.out.println("###");
         System.exit(0);
     }
 
