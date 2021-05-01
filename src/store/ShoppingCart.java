@@ -8,8 +8,10 @@ package store;
 
 import Reader.WarehouseStruct;
 
+import javax.management.timer.Timer;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -23,6 +25,8 @@ public class ShoppingCart {
     private int coord_y;
     private WarehouseStruct warehouse;
     private boolean engaged = false;//use for calls
+    public int coordIndex = 0;
+    public List<Point> coordList = new ArrayList<>();
     //  ###################  constructor  #################
     /** warehouse in which the shopping cart is generated,   and starting coords x, y**/
     public ShoppingCart(WarehouseStruct warehouse,int coord_x,int coord_y){
@@ -245,52 +249,46 @@ public class ShoppingCart {
         if (end_x == this.coord_x && end_y == this.coord_y){
             return true;
         }
-        List<java.awt.Point> coordList = getCoords(end_x,end_y);
-
-        List<java.awt.Point> conflictList = this.warehouse.findConflicts(coordList);
-        //first, test blockage of new target
-        if (!conflictList.isEmpty()){
-            //the first two checks are doing checks that make it impossible to get to a target completely
-            Point targetPoint = new Point(end_x,end_y);
-            Point placePoint = new Point(this.coord_x,this.coord_y);
-            if (this.warehouse.isColBlocked(targetPoint,"both") || this.warehouse.isColBlocked(placePoint,"both")){
-                System.out.println("ERROR: goTo - either a col of origin or destination is blocked");
-                return false;
-            }
-            if(this.warehouse.blockedTopPaths(targetPoint,placePoint)) {
-                System.out.println("ERROR: goTo - a top or bottom row is blocked on the same spot");
-                return false;
-            }
-
-            // a n d   r i g h t   he r e   i s   w h e r e   i   s a i d
-            //  "f u c k   i t "   a n d   i m p l e m  e nt e d   A *
-            //  a l g o r i t h m . .   . .   . .   i t   t o o k   m e
-            //   s o m e   t i m  e   t o   r e a l i s e  t h i s
-            //   n e e d ,   b u t   i   r e a l i s e d   i t
-            //   n e v e r t h e l e s s
-            Point p1 = new Point(this.coord_x,this.coord_y);
-            Point p2 = new Point(end_x,end_y);
-            coordList = warehouse.getAStarCoords(p1,p2);
-            if (coordList.isEmpty()){
-                System.out.println(" E M P T Y ");
-            }
-            for (int i = 0; i < coordList.size(); i++) {
-                System.out.print(coordList.get(i).x + " " + coordList.get(i).y + " ");
-                this.coord_x = coordList.get(i).x;
-                this.coord_y = coordList.get(i).y;
-            }
-            System.out.println("");
+        //the first two checks are doing checks that make it impossible to get to a target completely
+        Point targetPoint = new Point(end_x,end_y);
+        Point placePoint = new Point(this.coord_x,this.coord_y);
+        //fast checkup, definitely not complete, relict of old code kept on spot for some (very questionable) efficiency
+        if (this.warehouse.isColBlocked(targetPoint,"both") || this.warehouse.isColBlocked(placePoint,"both")){
+            System.out.println("ERROR: goTo - either a col of origin or destination is blocked");
+            return false;
         }
-        else {
-
-            //if solved problem or conflict list empty, walk there
-            for (int i = 0; i < coordList.size(); i++) {
-                System.out.print(coordList.get(i).x + " " + coordList.get(i).y + " ");
-                this.coord_x = coordList.get(i).x;
-                this.coord_y = coordList.get(i).y;
-            }
-            System.out.println("");
+        if(this.warehouse.blockedTopPaths(targetPoint,placePoint)) {
+            System.out.println("ERROR: goTo - a top or bottom row is blocked on the same spot");
+            return false;
         }
+
+        // a n d   r i g h t   he r e   i s   w h e r e   i   s a i d
+        //  "f u c k   i t "   a n d   i m p l e m  e nt e d   A *
+        //  a l g o r i t h m . .   . .   . .   i t   t o o k   m e
+        //   s o m e   t i m  e   t o   r e a l i s e  t h i s
+        //   n e e d ,   b u t   i   r e a l i s e d   i t
+        //   n e v e r t h e l e s s
+        Point p1 = new Point(this.coord_x,this.coord_y);
+        Point p2 = new Point(end_x,end_y);
+        this.coordList = warehouse.getAStarCoords(p1,p2);
+        if (this.coordList.isEmpty()){
+            System.out.println(" E M P T Y ");
+            return false;
+        }
+        for (int i = 0; i < this.coordList.size(); i++) {
+            //TODO add sleep or other mechanism to simulate slower movement of a shopping cart
+            if (warehouse.closedPaths.contains(this.coordList.get(i))){
+                //if during walking found the next tile to be blocked,
+                //call yourself again recursively to find new route.
+                this.coordList.clear();
+                this.coordIndex = 0;
+                return goTo(end_x,end_y);
+            }
+            this.coordIndex++;
+            this.coord_x = this.coordList.get(i).x;
+            this.coord_y = this.coordList.get(i).y;
+        }
+        System.out.println("");
         return true;
     }
 

@@ -250,40 +250,14 @@ public class WarehouseStruct {
 
 
     public List<Point> getAStarCoords(Point startPoint, Point endPoint){
-        System.out.println("in starcoords");
         List<AStarNode> alreadyExpanded = new ArrayList<>();
         List<AStarNode> queue = new ArrayList<>();
         List<Point> coordsList = new ArrayList<>();//results
-
         AStarNode startNode = new AStarNode(startPoint,0.0,getFastDistance(startPoint,endPoint),null);
         queue.add(startNode);
-        int count = 0;
         while(true){
-            count ++;
-            if (count == 35){
-                System.out.println("cycled");
-                break;
-            }
-            System.out.println();
-            System.out.println();
-
-            System.out.println("next cycle");
-            /*System.out.println("alreadyExpanded: " );
-            for (AStarNode n : alreadyExpanded){
-                System.out.print(n.getPoint() + "    ");
-            }
-            System.out.println("\n");
-            System.out.println("queued: ");
-            for (AStarNode n : queue){
-                System.out.printf("%s %.2f     ", n.getPoint() , n.getDistanceBegginingEnd());
-            }
-            System.out.println("");
-
-            System.out.println("\n");
-            */
             if (queue.isEmpty()){
-                System.out.println("queue empty, failed");
-                return coordsList;
+                return coordsList;//empty one
             }
             // g e t   a   p o i n t   t o   e x p a n d
             AStarNode currentNode = queue.get(0);
@@ -291,16 +265,14 @@ public class WarehouseStruct {
             alreadyExpanded.add(currentNode);
             //   i f   f i n a l ,   g e t   r o u t e   a n d   r e t u r n
             if (currentNode.getPoint().equals(endPoint) ){
-                System.out.println("  f  o  u  n  d     e  n  d  p  o  i  n  t  ,     g   e  t  t  i  n  g  a  p  a  t  h  b  a  c  k    ");
-                System.out.println("found point " + currentNode.getPoint() + " on cycle " + count);
+                //System.out.println("  f  o  u  n  d     e  n  d  p  o  i  n  t  ,     g   e  t  t  i  n  g  a  p  a  t  h  b  a  c  k    ");
+                //System.out.println("found point " + currentNode.getPoint() + " on cycle " + count);
                 AStarNode lastNode = currentNode;
                 int count2 = 0;
                 while(true){
                     //coordsList.add(lastNode.getPoint());
-
                     for (AStarNode n : alreadyExpanded){
                         if (n.getPoint().equals(lastNode.getExpandedBy())){
-                            System.out.println("found equals: " + lastNode.getPoint());
                             coordsList.add(n.getPoint());
                             lastNode = n;
                             continue;
@@ -308,19 +280,13 @@ public class WarehouseStruct {
                     }
                     if (lastNode.getPoint().equals(startPoint)){
                         System.out.println("returning ");
+                        Collections.reverse(coordsList);//so it goes from cart to target
+                        coordsList.add(endPoint);
                         return  coordsList;
                     }
-                    if (count2 == 100){
-                        System.out.println("CYCLED when compilating path");
-                        return coordsList;
-                    }
-                    count2++;
                 }
-
             }
-
             //e x p a n d i n g   a   p o i n t
-
             List<Point> bufferList= getNeighbors(currentNode.getPoint());
             //System.out.println("neighbours are: " + bufferList);
             //add the points into a queue, ignore already expanded, update existing
@@ -336,12 +302,9 @@ public class WarehouseStruct {
                     }
                 }
                 if (expanded == false){//maybe in queue
-                    //System.out.print("wasnt expanded ");
                     for (AStarNode queued : queue) {
                         if (queued.getPoint().equals(p)) {
-                            //System.out.print("found an item in queue already ");
                             if ((getFastDistance(p,endPoint)+getFastDistance(startPoint,p)) < queued.getDistanceBegginingEnd() ) {
-                                //System.out.print("updating values ");
                                 queued.setDistanceBeggining(getFastDistance(p,startPoint));
                                 queued.setDistanceBegginingEnd(getFastDistance(p,startPoint) + getFastDistance(p,endPoint));
                                 queued.setExpandedBy(currentNode.getPoint());
@@ -351,25 +314,19 @@ public class WarehouseStruct {
                     }
                 }//if not in queue, add the point to a queue
                 if (updated == false && expanded == false) {
-                    //System.out.print("wasnt found or updated, creating new ");
                     AStarNode newNode = new AStarNode(p,getFastDistance(startPoint,p),getFastDistance(startPoint,p) + getFastDistance(p,endPoint),currentNode.getPoint());
-
                     queue.add(newNode);
-
                 }
                 updated = false;
                 expanded = false;
-
             }
             Collections.sort(queue);//sort the queue by distance to end
         }
-        return coordsList;
     }
 
     /**@brief get neighbours of the given point into a
      * list and return them, if they are walkable to(not blocked)**/
     public List<Point> getNeighbors(Point point){
-        System.out.println("GETNEIGHBOURS of the point" + point);
         List<Point> returnList = new ArrayList<>();
 
         //nowhere more than three neighbours
@@ -381,7 +338,6 @@ public class WarehouseStruct {
         boolean p3_set = false;
 
         if (point.x > 0 && point.x < this.getCols() && point.y > -1 && point.y < this.getRows()){
-            //System.out.println("proper classical cols");
             p1_set = true;
             p2_set = true;
             p3_set = true;
@@ -457,7 +413,6 @@ public class WarehouseStruct {
                 returnList.add(p3);
             }
         }
-        System.out.println("\n");
         return returnList;
     }
 
