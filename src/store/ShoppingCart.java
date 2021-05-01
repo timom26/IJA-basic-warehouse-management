@@ -99,47 +99,7 @@ public class ShoppingCart {
     }
 
 
-
-
-
-
     //#####  movement functions   #########
-
-
-
-
-
-
-    /** @brief function returns a length of route to a given shelf from current position
-     * @param end_x coord x of the target shelf
-     * @param end_y coord y of the target shelf
-     * @return integer - length of route to a given shelf
-     */
-    public int routeLength(int end_x,int end_y){
-        int start_x = this.coord_x;
-        int start_y = this.coord_y;
-        int warehouse_x = this.warehouse.getCols();
-        int warehouse_y = this.warehouse.getRows();
-
-        //the same column
-        //if on western side and the shelf is in same column (western or eastern)
-        if (start_x % 2 == 1 && (end_x == start_x || end_x == start_x + 1)){
-            return (java.lang.Math.max(start_y,end_y) - java.lang.Math.min(start_y,end_y));
-        }
-        //on the eastern side and the shelf is in the same column (western or eastern)
-        else if (start_x % 2 == 0 && (end_x == start_x || end_x == start_x -1)){
-            return (java.lang.Math.max(start_y,end_y) - java.lang.Math.min(start_y,end_y));
-        }
-        else{
-            //not in same column
-            //calculate whether you go through top or bottom
-            //divided for readability into up/down part, and left/right part
-            int verticalMove = java.lang.Math.min(start_y+end_y + 2,warehouse_y - start_y + warehouse_y - end_y);
-            int horizontalMove = java.lang.Math.abs(end_x - start_x);
-            return verticalMove + horizontalMove;
-        }
-
-    }
     /** @brief function generates the shortest route to a given shelf and returns
      * it as a list of 2d points from current position to ending position
      * @param end_x coord x of the target shelf
@@ -252,15 +212,7 @@ public class ShoppingCart {
         //the first two checks are doing checks that make it impossible to get to a target completely
         Point targetPoint = new Point(end_x,end_y);
         Point placePoint = new Point(this.coord_x,this.coord_y);
-        //fast checkup, definitely not complete, relict of old code kept on spot for some (very questionable) efficiency
-        if (this.warehouse.isColBlocked(targetPoint,"both") || this.warehouse.isColBlocked(placePoint,"both")){
-            System.out.println("ERROR: goTo - either a col of origin or destination is blocked");
-            return false;
-        }
-        if(this.warehouse.blockedTopPaths(targetPoint,placePoint)) {
-            System.out.println("ERROR: goTo - a top or bottom row is blocked on the same spot");
-            return false;
-        }
+
 
         // a n d   r i g h t   he r e   i s   w h e r e   i   s a i d
         //  "f u c k   i t "   a n d   i m p l e m  e nt e d   A *

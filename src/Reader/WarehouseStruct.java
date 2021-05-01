@@ -111,86 +111,7 @@ public class WarehouseStruct {
         }
         return conflictList;
     }
-    public boolean isColBlocked(java.awt.Point testedP,java.lang.String string){
 
-        //first test
-        if (this.closedPaths.contains(testedP)){
-            System.out.println("COLBLOCK: the exact target tile is blocked");
-            return true;
-        }
-        boolean top = false;
-        boolean bottom = false;
-        if (string == "top"){
-            top = true;
-        }
-        else if (string == "bottom"){
-            bottom = true;
-        }
-        else if (string == "both"){
-            bottom = true;top = true;
-        }
-        else{
-            throw new InvalidParameterException();
-        }
-        //prepare for a test of a whole col
-        int leftcol;
-        int rightcol;
-        boolean blockedTop = false;
-        boolean blockedBottom = false;
-
-        if (testedP.x % 2 == 0){//at eastern shelf
-            leftcol = testedP.x-1;
-            rightcol = testedP.x;
-        }
-        else{//at western shelf
-            leftcol = testedP.x;
-            rightcol = testedP.x+1;
-        }
-        Point point0 = new Point();
-        Point point1 = new Point();
-        Point point2 = new Point();
-        Point point3 = new Point();
-        point0.x = leftcol;
-        point1.x = rightcol;point2.x=rightcol;point3.x=rightcol;
-
-        //fork from left col to the three tiles on right
-        if (top == true){
-            for (int i = testedP.y-1;i>=-1;i--){
-                point0.y=i;point1.y = i+1;point2.y=i;point3.y=i-1;
-                if (testTwoPoints(point0,point1) || testTwoPoints(point0,point2) || testTwoPoints(point0,point3)){
-                    blockedTop = true;
-                    break;//not strictly needed, is there for optimalisation
-                }
-            }
-        }
-        //in two for loops, so i can
-        //check if blocked from both top and bottom
-        if (bottom == true){
-            for (int i = testedP.y+1;i<=this.getRows();i++){
-                point0.y=i;point1.y = i+1;point2.y=i;point3.y=i-1;
-                if (testTwoPoints(point0,point1) || testTwoPoints(point0,point2) || testTwoPoints(point0,point3)){
-                    blockedBottom = true;
-                    break;//not strictly needed, is there for optimalisation
-                }
-            }
-        }
-       if (top && ! bottom){
-           if (blockedTop){
-               return true;
-           }
-       }
-       else if(! top && bottom){
-           if (blockedBottom){
-               return true;
-           }
-       }
-       else {
-            if (blockedTop && blockedBottom){
-                return true;
-            }
-       }
-        return false;
-    }
     /**side function to assess if both of the given points are blocked
      * @param point1
      * @param point2
@@ -202,51 +123,6 @@ public class WarehouseStruct {
         }
         return false;
     }
-
-    public boolean blockedTopPaths(Point point1,Point point2){
-        int x1 = java.lang.Math.min(point1.x,point2.x);
-        int x2 = java.lang.Math.max(point1.x,point2.x);
-        //possible to slip by to a column
-        if (x1 % 2 == 1){
-            x1 = x1 + 1;
-        }
-        if (x2%2 == 0){
-            x2 = x2 - 1;
-        }
-
-        Point p1 = new Point();
-        Point p2 = new Point();
-        Point p3 = new Point();
-        Point p4 = new Point();
-        p1.y = -1;
-        p2.y = -1;
-        p3.y = this.getRows();
-        p4.y = this.getCols();
-        boolean blocked = false;
-        for (int i = x1;i<=x2;i = i + 2){//warning, i = i+2, because width of col is 2
-            //if at least one of tiles on the top, and one of tiles
-            //on the bottom is blocked, the bath forward is totally blocked
-            p1.x = i;
-            p2.x = i + 1;
-            p3.x = i;
-            p4.x = i + 1;
-            if ( (this.closedPaths.contains(p1) || this.closedPaths.contains(p2))
-                && (this.closedPaths.contains(p3) || this.closedPaths.contains(p4)) ) {
-                blocked = true;
-                break;
-            }
-        }
-        return blocked;
-    }
-
-
-
-
-
-
-
-
-
 
 
     public List<Point> getAStarCoords(Point startPoint, Point endPoint){
