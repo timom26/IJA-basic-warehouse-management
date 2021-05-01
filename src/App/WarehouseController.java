@@ -51,42 +51,6 @@ public class WarehouseController {
     private static boolean RuntimePropsSet = false;
 
 
-    public static void ResizeAll(int Res, Pane warehousePane){
-        //warehousePane.getChildren().removeAll(rects);
-        //warehousePane.getChildren().removeAll(ObstacleGrid);
-        if(Res == 1){
-            for (Rectangle r :rects) {
-                //r.resizeRelocate();
-                //r.getParent().lay
-                r.setX(r.getX()+20);
-                r.setY(r.getY()+20);
-            }
-
-            for (Rectangle r :ObstacleGrid){
-                r.setX(r.getX()+10);
-                //r.resize(30,30);
-            }
-        }
-        else {
-            for (Rectangle r :rects) {
-                //r.resizeRelocate();
-                //r.getParent().lay
-                r.setX(r.getX()-20);
-                r.setY(r.getY()-20);
-            }
-
-            for (Rectangle r :ObstacleGrid){
-                r.setX(r.getX()-10);
-                //r.resize(30,30);
-            }
-
-        }
-
-
-        //warehousePane.getChildren().addAll(rects);
-        //warehousePane.getChildren().addAll(ObstacleGrid);
-    }
-
     public static void PaneDraw(int rows, int cols, Pane warehousePane){
 
         CreateResuplyArea(warehousePane);
@@ -238,9 +202,9 @@ public class WarehouseController {
 
     public static void CreateResuplyArea(Pane warehousePane){
         if(_resuplyArea != null)
-            warehousePane.getChildren().remove(_resuplyArea);
+            warehousePane.getChildren().removeAll(_resuplyArea);
         if(_parkingArea != null)
-            warehousePane.getChildren().remove(_parkingArea);
+            warehousePane.getChildren().removeAll(_parkingArea);
 
         double canvasHeight = warehousePane.getHeight();
         double canvasWidth = warehousePane.getWidth();
@@ -262,7 +226,7 @@ public class WarehouseController {
             return; //we don't allow more than 10 trolleys
         }
         if(Trolleys != null){
-            warehousePane.getChildren().remove(Trolleys);
+            warehousePane.getChildren().removeAll(Trolleys);
         }
         Trolleys = new ArrayList<Rectangle>();
         double canvasHeight = warehousePane.getHeight();

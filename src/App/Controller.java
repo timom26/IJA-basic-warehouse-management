@@ -16,8 +16,10 @@ import javafx.scene.control.ScrollPane;
 import store.ShoppingCart;
 import javafx.scene.layout.Pane;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Basic GUI controller.
@@ -31,6 +33,7 @@ public class Controller {
     public Pane warehousePane;
     private WarehouseStruct _workplace;
     private List<ClockController> _inMotion;
+    private boolean paused = false;
 
     /**
      * serves as de-facto main in GUI.
@@ -40,6 +43,10 @@ public class Controller {
      * of warehouse.
      */
     public void buttonLaunch() {
+        // clear possible ongoing simulation
+        ClockController.DispatchAll();
+        _inMotion = null;
+
         WarehouseStruct depot = new WarehouseStruct();
 
         boolean loadResponse = Read.ReadWarehousePlan(depot.shelves);
@@ -67,10 +74,9 @@ public class Controller {
 
 
         if(_inMotion != null){
-            ;
+            ClockController.DispatchAll();
         }
-        else
-            _inMotion = new ArrayList<ClockController>();
+        _inMotion = new ArrayList<ClockController>();
 
         CartStruct.Trolley tmpTrolley = CartStruct.allOrders.get(0);
 
@@ -85,19 +91,30 @@ public class Controller {
 
     }
 
-
-    public void ScrollAction(){
-        _scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        _scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        _scrollPane.setScaleShape(true);
-        _scrollPane.getContent().setScaleX(1.7);
-        _scrollPane.getContent().setScaleY(1.7);
-    }
-
-    public void zoomAction(){
+    public void ButtonPause(){
+        ClockController.Pause();
 
     }
 
+    public void Speed1x(){
+        ClockController.SetTime(1000);
+        ClockController.UpdateTimer(_inMotion);
+    }
+
+    public void Speed2x(){
+        ClockController.SetTime(500);
+        ClockController.UpdateTimer(_inMotion);
+    }
+
+    public void Speed4x(){
+        ClockController.SetTime(250);
+        ClockController.UpdateTimer(_inMotion);
+    }
+
+    public void Speed8x(){
+        ClockController.SetTime(125);
+        ClockController.UpdateTimer(_inMotion);
+    }
 
     /**
      * WIP - ignore for now
