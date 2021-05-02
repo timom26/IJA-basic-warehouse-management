@@ -10,10 +10,13 @@ package App;
 import Reader.Read;
 import Reader.WarehouseStruct;
 import javafx.application.Application;
+
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 import store.ShoppingCart;
 
 import java.util.ArrayList;
@@ -22,28 +25,27 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        /*FXMLLoader fxmlLoader = new FXMLLoader();
+        FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setController(new Controller());
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
         primaryStage.setTitle("Warehouse");
         primaryStage.setScene(new Scene(root, 640, 545));
-        primaryStage.show();*/
+        primaryStage.show();
 
         //init warehouse
-        WarehouseStruct warehouse1 = new WarehouseStruct();
-        Read.ReadWarehousePlan(warehouse1.shelves);
-        warehouse1.setRows(warehouse1.shelves.size());
-        warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
+//        WarehouseStruct warehouse1 = new WarehouseStruct();
+//        Read.ReadWarehousePlan(warehouse1.shelves);
+//        warehouse1.setRows(warehouse1.shelves.size());
+//        warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
 
 
-        ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
-        warehouse1.addBlockage(0,1);
-        System.out.println("###");
-        cart1.goTo(0,9);
-        System.out.println("###");
-        cart1.goTo(0,0);
-        System.out.println("###");
-        System.exit(0);
+//        ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
+//        warehouse1.addBlockage(0,1);
+//        System.out.println("###");
+//        cart1.goTo(0,9);
+//        System.out.println("###");
+//        cart1.goTo(0,0);
+//        System.out.println("###");
     }
 
 

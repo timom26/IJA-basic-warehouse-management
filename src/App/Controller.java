@@ -73,6 +73,7 @@ public class Controller {
         //CartStruct allCarts = new CartStruct();
 
 
+
         if(_inMotion != null){
             ClockController.DispatchAll();
         }
@@ -95,6 +96,10 @@ public class Controller {
         ClockController.Pause();
 
     }
+
+    /**
+     * Speed change functions
+     */
 
     public void Speed1x(){
         ClockController.SetTime(1000);

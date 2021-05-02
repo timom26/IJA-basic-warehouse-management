@@ -263,22 +263,37 @@ public class WarehouseController {
     }
 
 
-//    public static void MoveTrolley(int trolleyId, int row, int col, ShoppingCart trolley) throws InterruptedException {
-//        ClockController.SetTime(0);
-////        if(Trolleys.size() < trolleyId)
-////            return;
-////        Rectangle movable = Trolleys.get(trolleyId);
-////
-////        List<java.awt.Point> coordList = trolley.getCoords(col, row);
-////        for(java.awt.Point coord : coordList){
-////
-////            //movable.setX(movable.getX());
-////            movable.setY(movable.getY()-20);
-////
-////        }
-////        movable = null;
-//
-//    }
+    /**
+     * Move trolley up, down, left, right based on the differences of indexes
+     * @param trolleyId
+     * @param xFrom
+     * @param yFrom
+     * @param xTo
+     * @param yTo
+     */
+    public static void MoveTrolleyFromTo(int trolleyId, int xFrom, int yFrom, int xTo, int yTo){
+        if(Trolleys.size() < trolleyId)
+            return;
+        Rectangle movable = Trolleys.get(trolleyId);
+
+        if(xFrom > xTo){
+            movable.setX(movable.getX()-rectWidth);
+        }
+        else if(xFrom < xTo){
+            movable.setX(movable.getX()+rectWidth);
+        }
+        else if(yFrom > yTo){
+            movable.setY(movable.getY()-rectHeight);
+        }
+        else {
+            movable.setY(movable.getY()+rectHeight);
+        }
+        //This just skippes rectangle in between
+//        if(xFrom%2 != 0){
+//            movable.setX(movable.getX()+10);
+//        }
+    }
+
 
 
     public static void AddToolTip(WarehouseStruct depot){

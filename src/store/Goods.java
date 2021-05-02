@@ -35,7 +35,6 @@ public class Goods {
 
     public String getName() {
         return name;
-        //return null;
     }
 
     // Only adds new item to Box
@@ -51,7 +50,6 @@ public class Goods {
     // Creates new item and adds it to box
 
     public Item newItem(LocalDate localDate) {
-        /* what  to do now???? */
         Item newlyCreated =  new Item(this, localDate, true);
 
         return newlyCreated;

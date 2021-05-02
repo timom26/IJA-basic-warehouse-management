@@ -1,6 +1,7 @@
 package App;
 
 import Reader.CartStruct;
+import Reader.AStarNode;
 import Reader.WarehouseStruct;
 import store.ShoppingCart;
 
@@ -17,9 +18,10 @@ public class ClockController {
 
     private static boolean _pause = false;
     private static int _delay = 1000;
+    //private static WarehouseStruct _warehouse; //TODO this will be removed in production
     private static List<ScheduledExecutorService> _allExecutors;
     private ScheduledExecutorService scheduledExecutorService;
-    private static Runnable Task;
+    //private static Runnable Task;
 
 
     // instance properties
@@ -53,7 +55,7 @@ public class ClockController {
             futureTask.cancel(true);
         }
 
-        futureTask = _defaultExecutor.scheduleAtFixedRate(Task, 0, _delay, TimeUnit.MILLISECONDS);
+        futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
 
 //        if(_allExecutors != null){
 //            for (ScheduledExecutorService modify: _allExecutors) {
@@ -94,7 +96,11 @@ public class ClockController {
         Boolean inMotion = false;
         _currentShelfToGo = trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
 
-        _coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+        //_coordList = _cart.getAStarCords(_currentShelfToGo.getY(), _currentShelfToGo.getX());
+        // These will be used later
+        _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
+        _cart.planRoute(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+        _coordList = _cart.coordList;
         _atWaypoint = 0;
         _WaypointSize = _coordList.size();
 
@@ -105,31 +111,8 @@ public class ClockController {
         //https://stackoverflow.com/questions/28620806/how-do-i-change-the-rate-or-period-of-a-repeating-task-using-scheduledexecutorse
         //https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
-        Task = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if(!_pause){
-                    if(_atWaypoint <= _WaypointSize){
-                        _atWaypoint += 1;
-                        WarehouseController.MoveTrolley(1,0,-20);
-                    }
-                    else {
-                        _orderIndex += 1;
-                        if(_orderIndex < _trolley.allWaypoints.size()) {
-                            _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
-                            _coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
-                        }
-                        else {
-                            _defaultExecutor.shutdown();
-                        }
-                    }
-                }
-            }
-        };
 
-        futureTask = _defaultExecutor.scheduleAtFixedRate(Task, 0, _delay, TimeUnit.MILLISECONDS);
+        futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
 
         _allExecutors.add(_defaultExecutor);
 
@@ -138,8 +121,46 @@ public class ClockController {
     private void TrolleyRoutine(){
         if(!_pause){
             if(_atWaypoint <= _WaypointSize){
+                if (_cart.warehouse.closedPaths.contains(_coordList.get(_atWaypoint))){
+                    //if during walking found the next tile to be blocked,
+                    //recalculate route
+                    _cart.coordList.clear();
+                    _cart.coordIndex = 0;
+                    _cart.planRoute(_cart.goal_x, _cart.goal_y);
+
+                    //reset these
+                    _coordList = _cart.coordList;
+                    _atWaypoint = 0;
+                    _WaypointSize = _coordList.size();
+                    return;
+                }
                 _atWaypoint += 1;
-                WarehouseController.MoveTrolley(1,0,-20);
+
+                _cart.coordIndex++;
+
+                int toGoX = _cart.coordList.get(_atWaypoint).x;
+                int toGoY = _cart.coordList.get(_atWaypoint).y;
+
+                //Move trolley up, down, left, right based on the differences of indexes
+//                if(_cart.coord_x > toGoX){
+//                    WarehouseController.MoveTrolley(0,-20,0);
+//                }
+//                else if(_cart.coord_x < toGoX){
+//                    WarehouseController.MoveTrolley(0,+20,0);
+//                }
+//                else if(_cart.coord_y > toGoY){
+//                    WarehouseController.MoveTrolley(0,0,-20);
+//                }
+//                else {
+//                    WarehouseController.MoveTrolley(0,0,20);
+//                }
+
+                //convenient method
+                WarehouseController.MoveTrolleyFromTo(0, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+
+                _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
+                _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
+
             }
             else {
                 //private

@@ -25,7 +25,6 @@ public class Shelf {
             toBeAdded.addItem(itemToAdd);
             content.add(toBeAdded);
         }
-
     }
 
     public boolean containsGoods(Goods goods) {

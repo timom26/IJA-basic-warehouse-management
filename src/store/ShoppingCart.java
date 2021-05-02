@@ -21,12 +21,16 @@ public class ShoppingCart {
     //  #####################  vars  ###############
     private ArrayList<Item> content = new ArrayList<>();
     private int maximumCount = 10;//prepared for future dev with variable max count.
-    private int coord_x;
-    private int coord_y;
-    private WarehouseStruct warehouse;
+    public int coord_x;
+    public int coord_y;
+    public WarehouseStruct warehouse;
     private boolean engaged = false;//use for calls
     public int coordIndex = 0;
     public List<Point> coordList = new ArrayList<>();
+
+    //testing etc. variables
+    public int goal_x;
+    public int goal_y;
     //  ###################  constructor  #################
     /** warehouse in which the shopping cart is generated,   and starting coords x, y**/
     public ShoppingCart(WarehouseStruct warehouse,int coord_x,int coord_y){
@@ -200,6 +204,26 @@ public class ShoppingCart {
         return pointList;
     }
 
+    public boolean planRoute(int end_x,int end_y){
+        if (end_x == this.coord_x && end_y == this.coord_y){
+            return true;
+        }
+        //the first two checks are doing checks that make it impossible to get to a target completely
+        Point targetPoint = new Point(end_x,end_y);
+        Point placePoint = new Point(this.coord_x,this.coord_y);
+
+        Point p1 = new Point(this.coord_x,this.coord_y);
+        Point p2 = new Point(end_x,end_y);
+        this.coordList = warehouse.getAStarCoords(p1,p2);
+        if (this.coordList.isEmpty()){
+            System.out.println(" E M P T Y ");
+            return false;//we can get the Goods from where we stand
+        }
+
+        return true;//we need to walk :(
+    }
+
+
     /**@brief function gets route to a shelf, and then makes the cart go to it in real time
      * @param end_x coord x of the target shelf
      * @param end_y coord y of the target shelf
@@ -226,7 +250,10 @@ public class ShoppingCart {
         if (this.coordList.isEmpty()){
             System.out.println(" E M P T Y ");
             return false;
+        }else{
+            System.out.println(this.coordList);
         }
+
         for (int i = 0; i < this.coordList.size(); i++) {
             //TODO add sleep or other mechanism to simulate slower movement of a shopping cart
             if (warehouse.closedPaths.contains(this.coordList.get(i))){
