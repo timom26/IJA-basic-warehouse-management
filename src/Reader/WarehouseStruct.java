@@ -30,7 +30,6 @@ public class WarehouseStruct {
     private int rows;
     private int cols;
 
-
     /**
      * @brief returns list of goods from a given shelf
      * @param row coord of a shelf
@@ -73,6 +72,15 @@ public class WarehouseStruct {
     public void setCols(int cols) {
         this.cols = cols;
     }
+
+    public int getMax_x() {
+        return this.cols = cols + cols/2 + (cols%2 == 0 ? 1 : 2);
+    }
+
+    public int getMax_y() {
+        return this.rows + 2;
+    }
+
 
     /**@brief add blockage of a given tile**/
     public void addBlockage(int x,int y){
@@ -363,4 +371,5 @@ public class WarehouseStruct {
     public Double getFastDistance(Point p1,Point p2){
         return sqrt(  abs(p1.x - p2.x)*abs(p1.x - p2.x)  +   abs(p1.y - p2.y)*abs(p1.y - p2.y)  );
     }
+
 }
