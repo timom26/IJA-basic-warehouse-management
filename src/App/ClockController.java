@@ -93,6 +93,10 @@ public class ClockController {
         _cart = new ShoppingCart(workplace,0,10);
         _orderIndex = 0;
 
+        //This will be moved to Controller class in production
+        WarehouseController.BoundCartToTrolley(0, _cart);
+        WarehouseController.AddTrolleyToolTip();
+
         Boolean inMotion = false;
         _currentShelfToGo = trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
 

@@ -43,15 +43,21 @@ public class Controller {
         _inMotion = null;
 
         WarehouseStruct depot = new WarehouseStruct();
+        this._workplace = depot;
 
         boolean loadResponse = Read.ReadWarehousePlan(depot.shelves);
         depot.setRows(depot.shelves.size());
         depot.setCols(((ArrayList) depot.shelves.get(0)).size());
         if(loadResponse){
+//            WarehouseController.PaneDraw(depot.getRows(), depot.getCols(), warehousePane);
+//            WarehouseController.DrawGrid(depot.getRows(), depot.getCols(), warehousePane);
+
             if(Read.ReadStock(depot.shelves, depot.goods)){
                 WarehouseController.PaneDraw(depot.getRows(), depot.getCols(), warehousePane);
                 WarehouseController.DrawGrid(depot.getRows(), depot.getCols(), warehousePane);
                 WarehouseController.AddShelfToolTip(depot);
+                WarehouseController.SetWarehouse(_workplace);
+
                 //_zoomPane.setContent(_scrollPane);
                 //_zoomPane.prefWidth(610);
                 ZoomController.SetProperties(_scrollPane);
@@ -60,7 +66,7 @@ public class Controller {
                 //warehousePane.setOnScroll();
             }
         }
-        this._workplace = depot;
+
     }
 
     public void buttonSimulate() {
