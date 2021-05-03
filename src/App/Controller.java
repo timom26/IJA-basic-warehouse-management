@@ -10,16 +10,11 @@ package App;
 import Reader.CartStruct;
 import Reader.Read;
 import Reader.WarehouseStruct;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.control.ScrollPane;
-import store.ShoppingCart;
 import javafx.scene.layout.Pane;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Basic GUI controller.
@@ -56,7 +51,7 @@ public class Controller {
             if(Read.ReadStock(depot.shelves, depot.goods)){
                 WarehouseController.PaneDraw(depot.getRows(), depot.getCols(), warehousePane);
                 WarehouseController.DrawGrid(depot.getRows(), depot.getCols(), warehousePane);
-                WarehouseController.AddToolTip(depot);
+                WarehouseController.AddShelfToolTip(depot);
                 //_zoomPane.setContent(_scrollPane);
                 //_zoomPane.prefWidth(610);
                 ZoomController.SetProperties(_scrollPane);

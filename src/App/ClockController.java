@@ -90,7 +90,7 @@ public class ClockController {
         _trolley = trolley;
         _workplace = workplace;
 
-        _cart = new ShoppingCart(workplace,0,11);
+        _cart = new ShoppingCart(workplace,0,10);
         _orderIndex = 0;
 
         Boolean inMotion = false;
@@ -99,7 +99,13 @@ public class ClockController {
         //_coordList = _cart.getAStarCords(_currentShelfToGo.getY(), _currentShelfToGo.getX());
         // These will be used later
         _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-        _cart.planRoute(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+        _cart.planRoute(_cart.goal_x, _cart.goal_y); // shelfs are generated in reverse so we have to flip values
+
+        //_cart.planRoute(10, 16); // shelfs are generated in reverse so we have to flip values
+
+        int endOfWarehouse = _cart.warehouse.getCols() + _cart.warehouse.getCols() /2 + (_cart.warehouse.getCols()%2 == 0 ? 1 : 2);
+        //_cart.planRoute(_cart.warehouse.getCols(), _cart.goal_y);
+
         _coordList = _cart.coordList;
         _atWaypoint = 0;
         _WaypointSize = _coordList.size();
@@ -111,6 +117,10 @@ public class ClockController {
         //https://stackoverflow.com/questions/28620806/how-do-i-change-the-rate-or-period-of-a-repeating-task-using-scheduledexecutorse
         //https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
+
+        //TODO placeholder, delete
+        WarehouseController.MoveTrolley(0, 0, -20);
+
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
 

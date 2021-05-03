@@ -7,6 +7,7 @@
 
 package App;
 
+import Reader.CartStruct;
 import Reader.Read;
 import Reader.WarehouseStruct;
 import store.ShoppingCart;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class WarehouseController {
     private static List<Rectangle> rects;
-    private static List<Rectangle> ObstacleGrid;
+    private static List<BlockableGrid> ObstacleGrid;
 
     private static List<Rectangle> Trolleys;
     private static Rectangle _parkingArea;
@@ -92,11 +93,12 @@ public class WarehouseController {
         System.out.println(cols);
     }
 
-    private static void SetGridProperties(Rectangle grid){
+    private static void SetGridProperties(BlockableGrid grid, int index_x, int index_y){
         grid.setFill(Color.TRANSPARENT);
         grid.setStroke(Color.LIGHTBLUE);
         grid.getStrokeDashArray().addAll(1.0, 4.0);
         grid.setStrokeDashOffset(2);
+        grid.setIndexes(index_x, index_y);
 
         grid.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){
             @Override
@@ -117,7 +119,7 @@ public class WarehouseController {
     public static void DrawGrid(int rows, int cols, Pane warehousePane){
         if(ObstacleGrid != null)
             warehousePane.getChildren().removeAll(ObstacleGrid);
-        ObstacleGrid = new ArrayList<Rectangle> ();
+        ObstacleGrid = new ArrayList<BlockableGrid> ();
 
         double canvasHeight = warehousePane.getHeight() - 20;
         double canvasWidth = warehousePane.getWidth();
@@ -129,8 +131,9 @@ public class WarehouseController {
 
         for (double x = step; x < maxX; x += (even ? step + rectWidth : rectWidth)){
             for (double y = 0; y < canvasHeight; y += maxY){
-                Rectangle grid = new Rectangle(x, y, rectWidth, step);
-                SetGridProperties(grid);
+                BlockableGrid grid = new BlockableGrid(x, y, rectWidth, step);
+                //Rectangle grid = new Rectangle(x, y, rectWidth, step);
+                SetGridProperties(grid, ((int) x), ((int) y));
                 warehousePane.getChildren().add(grid);
             }
             even = !even;
@@ -138,16 +141,16 @@ public class WarehouseController {
 
         for (double x = 0; x < canvasWidth; x += step + 2*rectWidth){
             for (double y = 0; y < canvasHeight; y += maxY){
-                Rectangle grid = new Rectangle(x, y, step, step);
-                SetGridProperties(grid);
+                BlockableGrid grid = new BlockableGrid(x, y, step, step);
+                SetGridProperties(grid, ((int) x), ((int) y));
                 warehousePane.getChildren().add(grid);
             }
         }
 
         for (double x = 0; x < canvasWidth; x += step + 2*rectWidth){
             for (double y = step; y < maxY; y += rectHeight){
-                Rectangle grid = new Rectangle(x, y, step, rectHeight);
-                SetGridProperties(grid);
+                BlockableGrid grid = new BlockableGrid(x, y, step, rectHeight);
+                SetGridProperties(grid, ((int) x), ((int) y));
                 warehousePane.getChildren().add(grid);
             }
         }
@@ -155,13 +158,13 @@ public class WarehouseController {
         if(cols%2 == 1){
             double x = canvasWidth - step;
             for (double y = step; y < maxY; y += rectHeight){
-                Rectangle grid = new Rectangle(x, y, step, rectHeight);
-                SetGridProperties(grid);
+                BlockableGrid grid = new BlockableGrid(x, y, step, rectHeight);
+                SetGridProperties(grid, ((int) x), ((int) y));
                 warehousePane.getChildren().add(grid);
             }
             for (double y = 0; y < canvasHeight; y += maxY) {
-                Rectangle grid = new Rectangle(x, y, step, step);
-                SetGridProperties(grid);
+                BlockableGrid grid = new BlockableGrid(x, y, step, step);
+                SetGridProperties(grid, ((int) x), ((int) y));
                 warehousePane.getChildren().add(grid);
             }
         }
@@ -295,8 +298,27 @@ public class WarehouseController {
     }
 
 
+    /**
+     * This wont work bra
+     * @param trolley
+     */
+    public static void AddTrolleyToolTip(ShoppingCart trolley){
 
-    public static void AddToolTip(WarehouseStruct depot){
+        for (Rectangle r: Trolleys) {
+            Tooltip newToolTip = new Tooltip();
+
+            newToolTip.setShowDelay(Duration.ZERO);
+            Tooltip.install(
+                    r,
+                    newToolTip
+            );
+        }
+    }
+
+
+
+
+    public static void AddShelfToolTip(WarehouseStruct depot){
 
         int maxRows = depot.getRows();
         int maxCols = depot.getCols();
@@ -324,5 +346,30 @@ public class WarehouseController {
             );
         }
     }
+
+
+    public static class BlockableGrid extends Rectangle{
+        public int _index_x;
+        public int _index_y;
+
+        public void setIndexes(int x, int y){
+            this._index_x = x;
+            this._index_y = y;
+        }
+
+        public BlockableGrid(double x, double y, double width, double height){
+            super(x, y, width, height);
+        }
+    }
+
+    public class TrolleyGrid extends Rectangle{
+        public ShoppingCart boundedCart;
+
+        public void boundCart(ShoppingCart cart){
+            this.boundedCart = cart;
+        }
+
+    }
+
 
 }

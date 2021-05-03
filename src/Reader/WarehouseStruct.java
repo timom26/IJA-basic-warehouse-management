@@ -62,6 +62,7 @@ public class WarehouseStruct {
      * @return cols
      */
     public int getCols() {
+        //return this.cols = cols + cols/2 + (cols%2 == 0 ? 1 : 2);
         return cols;
     }
 
@@ -119,17 +120,18 @@ public class WarehouseStruct {
 
 
     public List<Point> getAStarCoords(Point startPoint, Point endPoint, String operation){
+        this.setCols(50);
         System.out.println(" " + startPoint + endPoint);
 
         //it is a point of a shelf,
         // and i want to change it
         // to a corresponding tile in front of that given shelf
         if (operation.equals("shelf")){
-            if (endPoint.x % 4 == 0) {//western shelf
-                endPoint.x = endPoint.x * 2 - 1;
+            if (endPoint.x % 2 == 0) {//western shelf
+                endPoint.x = endPoint.x + endPoint.x / 2 - 1;
             }
-            else if (endPoint.x % 4 == 1) {//eastern shelf
-                endPoint.x = endPoint.x * 2 ;
+            else if (endPoint.x % 2 == 1) {//eastern shelf
+                endPoint.x = endPoint.x + endPoint.x / 2;
             }
             else{
                 System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
@@ -349,4 +351,3 @@ public class WarehouseStruct {
         return sqrt(  abs(p1.x - p2.x)*abs(p1.x - p2.x)  +   abs(p1.y - p2.y)*abs(p1.y - p2.y)  );
     }
 }
-

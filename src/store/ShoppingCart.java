@@ -10,7 +10,6 @@ import Reader.WarehouseStruct;
 
 import javax.management.timer.Timer;
 import java.awt.*;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -101,6 +100,23 @@ public class ShoppingCart {
      */
     public int size(){
         return content.size();
+    }
+
+
+
+    /**
+     * @brief returns list of goods carried in cart
+     * @return string, containing all goods
+     */
+    public String PrintGoods(){
+        if(content.isEmpty())
+            return "Empty";
+        StringBuilder All = new StringBuilder();
+        for (Item item:content) {
+            All.append(item.getName()).append(", ").append('\n');
+        }
+
+        return All.toString();
     }
 
 
@@ -205,20 +221,37 @@ public class ShoppingCart {
         return pointList;
     }
 
+    /**@brief function calculates route to then move trolley in TrolleyRoutine
+     * based on the coordList calculated
+     * !change operation for debugging
+     * @param end_x coord x of the target shelf
+     * @param end_y coord y of the target shelf
+     * @return None
+     */
+
     public boolean planRoute(int end_x,int end_y){
+        //this.warehouse.setCols( this.warehouse.getCols()*2);
+
         if (end_x == this.coord_x && end_y == this.coord_y){
             return true;
         }
+        System.out.println(end_x);
+        System.out.println(end_y);
+
         //the first two checks are doing checks that make it impossible to get to a target completely
         Point targetPoint = new Point(end_x,end_y);
         Point placePoint = new Point(this.coord_x,this.coord_y);
 
         Point p1 = new Point(this.coord_x,this.coord_y);
         Point p2 = new Point(end_x,end_y);
-        this.coordList = warehouse.getAStarCoords(p1,p2);
+        //this.coordList = warehouse.getAStarCoords(placePoint,targetPoint,"tile");
+        this.coordList = warehouse.getAStarCoords(placePoint,targetPoint,"shelf");
         if (this.coordList.isEmpty()){
             System.out.println(" E M P T Y ");
             return false;//we can get the Goods from where we stand
+        }
+        else {
+            System.out.println(this.coordList);
         }
 
         return true;//we need to walk :(
@@ -249,10 +282,7 @@ public class ShoppingCart {
         if (this.coordList.isEmpty()){
             System.out.println(" E M P T Y ");
             return false;
-        }else{
-            System.out.println(this.coordList);
         }
-
         for (int i = 0; i < this.coordList.size(); i++) {
             //TODO add sleep or other mechanism to simulate slower movement of a shopping cart
             if (warehouse.closedPaths.contains(this.coordList.get(i))){
@@ -270,6 +300,7 @@ public class ShoppingCart {
         System.out.println("");
         return true;
     }
+
 
 
 }
