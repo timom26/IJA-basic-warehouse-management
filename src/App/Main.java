@@ -19,33 +19,38 @@ import javafx.stage.Stage;
 
 import store.ShoppingCart;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setController(new Controller());
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
-        primaryStage.setTitle("Warehouse");
-        primaryStage.setScene(new Scene(root, 640, 545));
-        primaryStage.show();
+        // FXMLLoader fxmlLoader = new FXMLLoader();
+        // fxmlLoader.setController(new Controller());
+        // Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
+        // primaryStage.setTitle("Warehouse");
+        // primaryStage.setScene(new Scene(root, 640, 545));
+        // primaryStage.show();
 
         //init warehouse
-//        WarehouseStruct warehouse1 = new WarehouseStruct();
-//        Read.ReadWarehousePlan(warehouse1.shelves);
-//        warehouse1.setRows(warehouse1.shelves.size());
-//        warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
+        WarehouseStruct warehouse1 = new WarehouseStruct();
+        Read.ReadWarehousePlan(warehouse1.shelves);
+        warehouse1.setRows(warehouse1.shelves.size());
+        warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
 
 
-//        ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
-//        warehouse1.addBlockage(0,1);
-//        System.out.println("###");
-//        cart1.goTo(0,9);
-//        System.out.println("###");
-//        cart1.goTo(0,0);
-//        System.out.println("###");
+        ShoppingCart cart1 = new ShoppingCart(warehouse1,-1,0);
+        warehouse1.addBlockage(-1,1);
+        System.out.println("###");
+        cart1.goTo(0,9,"shelf");
+        System.out.println("###");
+        cart1.goTo(4, 0, "shelf");
+
+        cart1.goTo(6,0,"tile");
+        //cart1.goTo(0,0);
+        //System.out.println("###");
+        System.exit(0);
     }
 
 
