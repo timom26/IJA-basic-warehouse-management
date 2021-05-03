@@ -108,7 +108,7 @@ public class ShoppingCart {
      * @brief returns list of goods carried in cart
      * @return string, containing all goods
      */
-    /*public String PrintGoods(){
+    public String PrintGoods(){
         if(content.isEmpty())
             return "Empty";
         StringBuilder All = new StringBuilder();
@@ -117,7 +117,7 @@ public class ShoppingCart {
         }
 
         return All.toString();
-    }*/
+    }
 
 
     //#####  movement functions   #########
