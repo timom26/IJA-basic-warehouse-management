@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import store.ShoppingCart;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 public class Main extends Application {
@@ -36,13 +37,16 @@ public class Main extends Application {
         warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
 
 
-        ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
-        warehouse1.addBlockage(0,1);
+        ShoppingCart cart1 = new ShoppingCart(warehouse1,-1,0);
+        warehouse1.addBlockage(-1,1);
         System.out.println("###");
-        cart1.goTo(0,9);
+        cart1.goTo(0,9,"shelf");
         System.out.println("###");
-        cart1.goTo(0,0);
-        System.out.println("###");
+        cart1.goTo(4, 0, "shelf");
+
+        cart1.goTo(6,0,"tile");
+        //cart1.goTo(0,0);
+        //System.out.println("###");
         System.exit(0);
     }
 
