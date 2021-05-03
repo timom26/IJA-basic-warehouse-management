@@ -108,7 +108,7 @@ public class ShoppingCart {
      * @brief returns list of goods carried in cart
      * @return string, containing all goods
      */
-    public String PrintGoods(){
+    /*public String PrintGoods(){
         if(content.isEmpty())
             return "Empty";
         StringBuilder All = new StringBuilder();
@@ -117,7 +117,7 @@ public class ShoppingCart {
         }
 
         return All.toString();
-    }
+    }*/
 
 
     //#####  movement functions   #########
@@ -264,7 +264,7 @@ public class ShoppingCart {
      * @return None
      */
     public boolean goTo(int end_x,int end_y,String string){
-        if (end_x == this.coord_x && end_y == this.coord_y){
+        if (end_x == this.coord_x && end_y == this.coord_y && string == "tile"){
             return true;
         }
         //the first two checks are doing checks that make it impossible to get to a target completely

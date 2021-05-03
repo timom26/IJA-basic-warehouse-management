@@ -121,17 +121,17 @@ public class WarehouseStruct {
 
     public List<Point> getAStarCoords(Point startPoint, Point endPoint, String operation){
         this.setCols(50);
-        System.out.println(" " + startPoint + endPoint);
+        System.out.println("\n\nStarting getastar with parameters" + startPoint + endPoint+operation);
 
         //it is a point of a shelf,
         // and i want to change it
         // to a corresponding tile in front of that given shelf
         if (operation.equals("shelf")){
             if (endPoint.x % 2 == 0) {//western shelf
-                endPoint.x = endPoint.x + endPoint.x / 2 - 1;
+                endPoint.x = endPoint.x * 2 - 1 ;
             }
             else if (endPoint.x % 2 == 1) {//eastern shelf
-                endPoint.x = endPoint.x + endPoint.x / 2;
+                endPoint.x = endPoint.x * 2;
             }
             else{
                 System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
@@ -140,20 +140,21 @@ public class WarehouseStruct {
         }
         else if (operation == "tile"){}
         else{
+            System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
             throw new InvalidParameterException("unknown parameter in function getAStarCoords");
         }
-        System.out.println(" " + startPoint + endPoint);
+        //System.out.println(" " + startPoint + endPoint);
         List<AStarNode> alreadyExpanded = new ArrayList<>();
         List<AStarNode> queue = new ArrayList<>();
         List<Point> coordsList = new ArrayList<>();//results
         AStarNode startNode = new AStarNode(startPoint,0.0,getFastDistance(startPoint,endPoint),null);
         queue.add(startNode);
-        //System.out.println("AStarnode is looking for way to: " + endPoint);
+        System.out.println("AStarnode is looking for way to: " + endPoint);
         while(true){
-            /*System.out.print("the queue is: ");
+            System.out.print("the queue is: ");
             for (AStarNode n : queue) {
                 System.out.print("  " + n.getPoint());
-            }System.out.println();*/
+            }System.out.println();
 
             if (queue.isEmpty()){
                 return coordsList;//empty one, did not find the way
@@ -228,7 +229,8 @@ public class WarehouseStruct {
     /**@brief get neighbours of the given point into a
      * list and return them, if they are walkable to(not blocked)**/
     public List<Point> getAStarNeighbors(Point point){
-        if (point.x > this.getCols() || point.x < -1 || point.y < -1 || point.y > this.getRows()){
+
+        if (point.x > this.getCols() || point.x < -1 || point.y < -1 || point.y > this.getRows() + 1){
             throw new InvalidParameterException("the point ot out of warehouse bounds");
         }
 
@@ -239,9 +241,11 @@ public class WarehouseStruct {
         Point p1 = new Point();
         Point p2 = new Point();
         Point p3 = new Point();
+        Point p4 = new Point();
         boolean p1_set = false;
         boolean p2_set = false;
         boolean p3_set = false;
+        boolean p4_set = false;
 
         //if in col && not on the edge, get a tile from the other side of col
         if (point.x > 0 && point.x < this.getCols() && point.y > -1 && point.y < this.getRows()){
@@ -249,6 +253,7 @@ public class WarehouseStruct {
             p1_set = true;
             p2_set = true;
             p3_set = true;
+
             if (point.x % 4 == 3){//eastern col
                 //add a point to the west
                 p1.x = point.x - 1;
@@ -282,7 +287,7 @@ public class WarehouseStruct {
             p3.y = point.y+1;//down
         }
 
-        if((point.y == -1  ||  point.y == this.getRows())    && point.x >= 0  && point.x <= this.getCols()){
+        if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)    && point.x >= 0  && point.x <= this.getCols()){
             //in a horizontal walkway, and can add a neighbour to the left
             //System.out.print("  horisontal to left  ");
 
@@ -290,7 +295,7 @@ public class WarehouseStruct {
             p1.y = point.y;
             p1_set = true;
         }
-        if((point.y == -1  ||  point.y == this.getRows())  && point.x >= -1   && point.x != this.getCols()){
+        if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)  && point.x >= -1   && point.x != this.getCols()){
             //in a horizontal walkway, and can add a neighbour to the right
             //System.out.print("  horisontal to right  ");
 
@@ -318,31 +323,39 @@ public class WarehouseStruct {
                 p3.y = point.y - 1;
                 p3_set = true;
             }
+            p4_set = true;//always down
+            p4.x = point.x;
+            p4.y = point.y +1;
         }
-
+        if(point.y == getRows() + 1){
+            //in garages, go up (sideways it is standardised)
+            p3_set = true;
+            p3.x = point.x;
+            p3.y = point.y -1;
+        }
 
         //check all points if not blocked
         if (p1_set){
             if (!this.closedPaths.contains(p1)){
-                //System.out.print("added p1 with value: " + p1);
                 returnList.add(p1);
             }
         }
         if (p2_set) {
             if (!this.closedPaths.contains(p2)) {
-                //System.out.print("added p2 with value: " + p2);
-
                 returnList.add(p2);
             }
         }
         if (p3_set){
             if (!this.closedPaths.contains(p3)){
-                //System.out.print("added p3 with value: " + p3);
-
                 returnList.add(p3);
             }
         }
-        //System.out.println("  neighbours of " + point + " are " + returnList);
+        if (p4_set){
+            if (!this.closedPaths.contains(p4)){
+                returnList.add(p4);
+            }
+        }
+        System.out.println("  neighbours of " + point + " are " + returnList);
         return returnList;
     }
 
