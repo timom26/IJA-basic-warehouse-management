@@ -71,8 +71,6 @@ public class WarehouseController {
         rectHeight = (canvasHeight - stepY - step)/rows;
         rectWidth = (canvasWidth - stepX - (cols%2 == 0 ? step : 2*step))/cols;
 
-        //MouseEvent handlers
-
         double maxX = canvasWidth - step;
         double maxY = canvasHeight - step;
         boolean even = true;

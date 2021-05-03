@@ -100,6 +100,8 @@ public class ClockController {
         // These will be used later
         _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
         _cart.planRoute(_cart.goal_x, _cart.goal_y); // shelfs are generated in reverse so we have to flip values
+        //_cart.planRoute(_cart.goal_x-1, _cart.goal_y); // shelfs are generated in reverse so we have to flip values
+
 
         //_cart.planRoute(10, 16); // shelfs are generated in reverse so we have to flip values
 
