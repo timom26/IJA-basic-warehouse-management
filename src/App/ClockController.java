@@ -90,7 +90,7 @@ public class ClockController {
         _trolley = trolley;
         _workplace = workplace;
 
-        _cart = new ShoppingCart(workplace,0,10);
+        _cart = new ShoppingCart(workplace,-1,10);
         _orderIndex = 0;
 
         //This will be moved to Controller class in production
@@ -125,7 +125,7 @@ public class ClockController {
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
 
         //TODO placeholder, delete
-        WarehouseController.MoveTrolley(0, 0, -20);
+        TrolleyController.MoveTrolley(0, +20, -20);
 
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
@@ -172,7 +172,7 @@ public class ClockController {
 //                }
 
                 //convenient method
-                WarehouseController.MoveTrolleyFromTo(0, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+                TrolleyController.MoveTrolleyFromTo(0, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
 
                 _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
                 _cart.coord_y = _cart.coordList.get(_atWaypoint).y;

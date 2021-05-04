@@ -7,37 +7,29 @@
 
 package App;
 
-import Reader.CartStruct;
-import Reader.Read;
 import Reader.WarehouseStruct;
 import store.ShoppingCart;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.EventListener;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WarehouseController {
     private static List<Rectangle> rects;
     private static List<BlockableGrid> ObstacleGrid;
 
-    private static List<TrolleyGrid> Trolleys;
+    protected static List<TrolleyGrid> Trolleys;
     private static Rectangle _parkingArea;
     private static Rectangle _resuplyArea;
 
@@ -56,7 +48,39 @@ public class WarehouseController {
     private static double Liney;
 
     private static boolean RuntimePropsSet = false;
-    private static WarehouseStruct _controlledWarehouse; //for setting blockages via GUI
+    protected static WarehouseStruct _controlledWarehouse; //for setting blockages via GUI
+
+    public static enum Direction{
+        left,
+        right,
+        up,
+        down
+    }
+
+    public static enum UnitOfShift {
+        shelfWidth(rectWidth),
+        shelfHeight(rectHeight),
+        gridSize(stepGrid),
+        shelfGridWidth(_horizontalShelfStep),
+        shelfGridHeight(_verticalShelfStep),
+        Err(0);
+
+        public double measure;
+
+        UnitOfShift(double val)
+        {
+            this.measure = val;
+        }
+
+//        static {
+//            for (UnitOfShift e : values()) {
+//                BY_VALUE.put(e, e.);
+//            }
+//        }
+//        private static final Map<String, UnitOfShift> BY_LABEL = new HashMap<>();
+
+    }
+
 
     public static void SetWarehouse(WarehouseStruct wareHouse){
         _controlledWarehouse = wareHouse;
@@ -151,6 +175,7 @@ public class WarehouseController {
                 BlockableGrid grid = new BlockableGrid(x, y, stepGrid, rectHeight);
                 SetGridProperties(grid, index_X, index_Y++);
                 warehousePane.getChildren().add(grid);
+                grid.toBack();
             }
             index_Y = 1;
             even = !even;
@@ -178,6 +203,7 @@ public class WarehouseController {
 
                 SetGridProperties(grid, index_X++, index_Y);
                 warehousePane.getChildren().add(grid);
+                grid.toBack();
 
                 if (countToTWO == 2){
                     touchingShelves = !touchingShelves;
@@ -202,10 +228,10 @@ public class WarehouseController {
                 @Override
                 public void handle(MouseEvent event) {
                     if(castLine && event.isShiftDown()){
-                        Line alo = new Line(Linex,Liney,event.getX(), event.getY());
-                        warehousePane.getChildren().add(alo);
+                        Line RayCast_toBlock = new Line(Linex,Liney,event.getX(), event.getY());
+                        warehousePane.getChildren().add(RayCast_toBlock);
                         for (BlockableGrid r: ObstacleGrid) {
-                            if(r.getBoundsInParent().intersects(alo.getBoundsInParent()))
+                            if(r.getBoundsInParent().intersects(RayCast_toBlock.getBoundsInParent()))
                                 if (r.getFill().equals(Color.TRANSPARENT)){
                                     _controlledWarehouse.addBlockage(r._index_x, r._index_y);
                                     r.setFill(Color.BLACK);
@@ -216,7 +242,7 @@ public class WarehouseController {
                                 }
                         }
                         castLine = false;
-                        warehousePane.getChildren().remove(alo);
+                        warehousePane.getChildren().remove(RayCast_toBlock);
                     }
                     else if(event.isShiftDown()){
                         Linex = event.getX();
@@ -271,13 +297,91 @@ public class WarehouseController {
 
         for(int counter = 0; counter <= howMany; counter++ ){
             TrolleyGrid trolley = new TrolleyGrid(x, canvasHeight-15, 10, 10);
-            trolley.setFill(Color.YELLOW);
+            //TrolleyGrid trolley = new TrolleyGrid(x, canvasHeight-30, 10, 10);
+            trolley.setFill(Color.CORAL);
+
+            trolley.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>(){
+                @Override
+                public void handle(MouseEvent event) {
+                    System.out.println("We here");
+
+                    if(trolley.boundedCart == null)
+                        return;
+
+                    if(trolley.isRoutePrinted) {
+                        warehousePane.getChildren().removeAll(trolley._route);
+                        trolley._route = new ArrayList<>();
+                        trolley.isRoutePrinted = false;
+                    }
+                    else{
+                        trolley._route = new ArrayList<>();
+                        PrintRoute(trolley.boundedCart.coordList, warehousePane, trolley);
+                        trolley.isRoutePrinted = true;
+                    }
+                }
+            });
+
+            //warehousePane.toFront(trolley);
 
             Trolleys.add(trolley);
             warehousePane.getChildren().add(trolley);
 
+            trolley.toFront();
+
             x += 25;
         }
+    }
+
+    public static void PrintRoute(List<Point> coordList, Pane warehousePane, TrolleyGrid trolley){
+        if (coordList == null)
+            return;
+
+        int previous_x = coordList.get(0).x;
+        int previous_y = coordList.get(0).y;
+
+        double LineStartX = trolley.getX()+5;
+        double LineStartY = trolley.getY()+5;
+        Direction where;
+        UnitOfShift length;
+
+        for (Point p: coordList) {
+            if(previous_x == p.x && previous_y == p.y)
+                continue;
+
+            length = TrolleyController.GetMovementUnit(previous_x, previous_y, p.x, p.y);
+            Line RouteChunk;
+
+            if(previous_x > p.x){
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX-length.measure, LineStartY);
+                LineStartX = LineStartX - length.measure;
+            }
+            else if(previous_x < p.x){
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX+length.measure, LineStartY);
+                LineStartX = LineStartX + length.measure;
+            }
+            else if(previous_y > p.y){
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX, LineStartY - length.measure);
+                LineStartY = LineStartY - length.measure;
+            }
+            else {
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX, LineStartY + length.measure);
+                LineStartY = LineStartY + length.measure;
+            }
+
+            //Line RouteChunk = new Line(LineStartX, LineStartY, LineStartX+lenght.measure, LineStartY+lenght.measure);
+            RouteChunk.setStroke(Color.BLUE);
+            RouteChunk.setStrokeWidth(5);
+            warehousePane.getChildren().add(RouteChunk);
+            RouteChunk.toBack();
+            trolley._route.add(RouteChunk);
+
+            previous_x = p.x;
+            previous_y = p.y;
+
+            //Line RayCast_toBlock = new Line(0, 100, 400, 20);
+        }
+
+        //Line RayCast_toBlock = new Line(0, 100, 400, 20);
     }
 
     public static void BoundCartToTrolley(int id, ShoppingCart cart){
@@ -294,89 +398,10 @@ public class WarehouseController {
     po najetí/kliknutí na symbol vozíku se zvýrazní trasa v mapě a zobrazí jeho aktuální náklad
      */
 
+/** ######################################################################################### */
 
-    public static void MoveTrolley(int trolleyId, int x, int y){
-        if(Trolleys.size() < trolleyId)
-            return;
-        Rectangle movable = Trolleys.get(trolleyId);
-        movable.setX(movable.getX()+x);
-        movable.setY(movable.getY()+y);
-    }
+/** ######################################################################################### */
 
-
-    /**
-     * Move trolley up, down, left, right based on the differences of indexes
-     * @param trolleyId
-     * @param xFrom
-     * @param yFrom
-     * @param xTo
-     * @param yTo
-     */
-    public static void MoveTrolleyFromTo(int trolleyId, int xFrom, int yFrom, int xTo, int yTo){
-        int moduloFromX = xFrom%4;
-        int moduloToX = xTo%4;
-
-        //To discuss with teammate what indexes we allow
-        //yFrom%(_controlledWarehouse.getRows()+1);
-        int moduloFromY = yFrom%(_controlledWarehouse.getRows());
-        int moduloToY = yTo%(_controlledWarehouse.getRows());
-
-        if(Trolleys.size() < trolleyId)
-            return;
-        Rectangle movable = Trolleys.get(trolleyId);
-
-        //double MoveBy;
-
-        if(xFrom > xTo){
-            switch (moduloFromX+moduloToX){
-                case 1:
-                case 5:
-                    movable.setX(movable.getX()-_horizontalShelfStep);
-                    break;
-                case 3:
-                    if (moduloFromX == 0 || moduloFromX == 3)
-                        movable.setX(movable.getX()-stepGrid);
-                    else
-                        movable.setX(movable.getX()-rectWidth);
-                    break;
-                default:
-                    return;
-            }
-        }
-        else if(xFrom < xTo){
-            switch (moduloFromX+moduloToX){
-                case 1:
-                case 5:
-                    movable.setX(movable.getX()+_horizontalShelfStep);
-                    break;
-                case 3:
-                    if (moduloFromX == 0 || moduloFromX == 3)
-                        movable.setX(movable.getX()+stepGrid);
-                    else
-                        movable.setX(movable.getX()+rectWidth);
-                    break;
-                default:
-                    return;
-            }
-        }
-        else if(yFrom > yTo){
-            if(moduloToY == 0 || moduloFromY == 0)
-                movable.setY(movable.getY()-_verticalShelfStep);
-            else
-                movable.setY(movable.getY()-rectHeight);
-        }
-        else {
-            if(moduloFromY == 0 || moduloFromX == 0)
-                movable.setY(movable.getY()+_verticalShelfStep);
-            else
-                movable.setY(movable.getY()+rectHeight);
-        }
-
-        //This just skippes rectangle in between
-//        if(xFrom%2 != 0){
-//            movable.setX(movable.getX()+10);
-//        }
-    }
 
 
     /**
@@ -397,8 +422,6 @@ public class WarehouseController {
 
         }
     }
-
-
 
 
     public static void AddShelfToolTip(WarehouseStruct depot){
@@ -447,6 +470,8 @@ public class WarehouseController {
 
     public static class TrolleyGrid extends Rectangle{
         public ShoppingCart boundedCart;
+        public List<Line> _route;
+        public boolean isRoutePrinted = false;
 
         public void boundCart(ShoppingCart cart){
             this.boundedCart = cart;
