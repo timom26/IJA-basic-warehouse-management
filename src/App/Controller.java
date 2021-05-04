@@ -10,11 +10,18 @@ package App;
 import Reader.CartStruct;
 import Reader.Read;
 import Reader.WarehouseStruct;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Basic GUI controller.
@@ -26,7 +33,6 @@ public class Controller {
     //public ZoomablePane _zoomPane;
     public ScrollPane _scrollPane;
     public Pane warehousePane;
-    public static Pane WWW;
     private WarehouseStruct _workplace;
     private List<ClockController> _inMotion;
     private boolean paused = false;
@@ -41,7 +47,6 @@ public class Controller {
 
     public void buttonLaunch() {
         // clear possible ongoing simulation
-        WWW = warehousePane;
         ClockController.DispatchAll();
         _inMotion = null;
 
@@ -52,9 +57,6 @@ public class Controller {
         depot.setRows(depot.shelves.size());
         depot.setCols(((ArrayList) depot.shelves.get(0)).size());
         if(loadResponse){
-//            WarehouseController.PaneDraw(depot.getRows(), depot.getCols(), warehousePane);
-//            WarehouseController.DrawGrid(depot.getRows(), depot.getCols(), warehousePane);
-
             if(Read.ReadStock(depot.shelves, depot.goods)){
                 WarehouseController.PaneDraw(depot.getRows(), depot.getCols(), warehousePane);
                 WarehouseController.DrawGrid(depot.getRows(), depot.getCols(), warehousePane);
@@ -77,16 +79,30 @@ public class Controller {
         }
         _inMotion = new ArrayList<ClockController>();
 
+        int id = 0;
         for (CartStruct.Trolley trolley : CartStruct.allOrders) {
-            ClockController tmp = new ClockController(trolley, _workplace);
+            ClockController tmp = new ClockController(trolley, _workplace, id++);
             _inMotion.add(tmp);
         }
 
     }
 
+    public void launchMenu() throws IOException {
+        if(!ClockController.get_pause())
+            ClockController.Pause();
+        Stage menu = new Stage();
+        menu.initModality(Modality.APPLICATION_MODAL);
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        //TODO menu Controller
+        //fxmlLoader.setController(new Controller());
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("menu.fxml"));
+        menu.setTitle("Menu");
+        menu.setScene(new Scene(root, 500, 270));
+        menu.show();
+    }
+
     public void ButtonPause(){
         ClockController.Pause();
-
     }
 
     /**

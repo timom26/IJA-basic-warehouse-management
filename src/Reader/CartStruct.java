@@ -33,10 +33,10 @@ public class CartStruct {
 
 
     /*Boolean*/
-    public void AddGoodsIndexToCart(int id, int row, int coll, String GoodsName){
+    public void AddGoodsIndexToCart(int id, int row, int coll, String GoodsName, int amount){
         Trolley toAdd = allOrders.get(id-1);
 
-        toAdd.AddIndex(row, coll, GoodsName);
+        toAdd.AddIndex(row, coll, GoodsName, amount);
 
     }
 
@@ -53,16 +53,19 @@ public class CartStruct {
             allWaypoints = new ArrayList<>();
         }
 
-        public void AddIndex(int row, int coll, String GoodsName){
+        public void AddIndex(int row, int coll, String GoodsName, int amount){
             /* if(allWaypoints.contains(o -> ((Index) o).GoodsName.contentEquals(GoodsName))){ } */
+            /** check if goods are already in requsts and add new point */
             if(allWaypoints.stream().anyMatch(o -> o.GoodsName.equals(GoodsName))){
                 targetIndex tmp = allWaypoints.stream().filter(o -> o.GoodsName.contentEquals(GoodsName)).findFirst().get();
                 tmp.AddPoints(row, coll);
                 allWaypoints.add(tmp);
             }
+            /** Create new index with name and amount */
             else {
                 targetIndex tmp = new targetIndex();
                 tmp.setIndexName(GoodsName);
+                tmp.amount = amount;
                 tmp.AddPoints(row, coll);
                 allWaypoints.add(tmp);
             }

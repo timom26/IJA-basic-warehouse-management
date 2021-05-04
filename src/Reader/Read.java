@@ -128,8 +128,10 @@ public class Read {
                 AllCarts.AddOrder(trolleyID);
 
                 String productName;
+                int amount;
                 do{
                     productName = sc.next();
+                    amount = Integer.parseInt(sc.next());
 
                     String finalProductName = productName;
                     //Optional hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst();
@@ -143,7 +145,7 @@ public class Read {
                         for(int row = 0; row <rowsMax; row++ ){
                             for(int coll = 0; coll < colsMax; coll++ ){
                                 if(((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) hell))){
-                                    AllCarts.AddGoodsIndexToCart(trolleyID, row, coll, productName);
+                                    AllCarts.AddGoodsIndexToCart(trolleyID, row, coll, productName, amount);
                                     //return true; //TODO return list or struct or what else
                                     // TODO but Really I should make a Class for this thing
                                 };
@@ -156,13 +158,6 @@ public class Read {
                     }
 
                 }while(sc.hasNext(",") && sc.next().contentEquals(",")); // sanity check
-
-                //Debug code
-                /*CartStruct.Trolley.targetIndex aga = AllCarts.GetCart(trolleyID).GetIndex("Zidle");
-
-                // print info about index
-                String hah = aga.GetIndexName();
-                System.out.println(hah);*/
 
             }
 

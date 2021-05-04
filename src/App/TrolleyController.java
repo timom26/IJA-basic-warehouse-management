@@ -22,6 +22,14 @@ public class TrolleyController {
         movable.setY(movable.getY()+y);
     }
 
+    public static void PlaceTrolley(int trolleyId, int x, int y){
+        if(WarehouseController.Trolleys.size() < trolleyId)
+            return;
+        Rectangle movable = WarehouseController.Trolleys.get(trolleyId);
+        movable.setX(x);
+        movable.setY(y);
+    }
+
     public static void MoveTrolleyByUnit(Rectangle trolley, WarehouseController.UnitOfShift unit, WarehouseController.Direction where){
         switch (where){
             case left:
@@ -167,17 +175,8 @@ public class TrolleyController {
 
         if(!(tmp = WarehouseController.Trolleys.get(trolleyId)).isRoutePrinted)
             return;
-
-        //(WarehouseController._warehousePane.)getChildren().removeAll(tmp._route);
-        try {
-            WarehouseController._warehousePane.getChildren().removeAll(tmp._route);
+        WarehouseController._warehousePane.getChildren().removeAll(tmp._route);
             //Controller.WWW.getChildren().removeAll(tmp._route);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return;
-        }
         //Controller.WWW.getChildren().removeAll(tmp._route);
         PrintRoute(tmp.boundedCart.coordList,
          //       Controller.WWW,

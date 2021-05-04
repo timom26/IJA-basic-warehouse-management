@@ -4,8 +4,9 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -13,39 +14,16 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane alignment="center" hgap="10" prefHeight="540.0" prefWidth="640.0" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="App.Controller">
-    <VBox minHeight="400" minWidth="640" prefHeight="529.0" prefWidth="640.0" scaleShape="false" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<!--<?import App.ZoomablePane?>-->
+
+<GridPane alignment="center" hgap="10" prefHeight="540.0" prefWidth="640.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="App.Controller">
+    <VBox minHeight="400" minWidth="640" prefHeight="529.0" prefWidth="640.0" scaleShape="false" GridPane.columnIndex="1" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="Options">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="New" />
-                        <MenuItem mnemonicParsing="false" text="Load..." />
-                        <Menu mnemonicParsing="false" text="Load Recent" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                        <MenuItem mnemonicParsing="false" text="Save" />
-                        <MenuItem mnemonicParsing="false" text="Save As…" />
-                        <MenuItem mnemonicParsing="false" text="Revert" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Preferences…" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Quit" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Undo" />
-                        <MenuItem mnemonicParsing="false" text="Redo" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Cut" />
-                        <MenuItem mnemonicParsing="false" text="Copy" />
-                        <MenuItem mnemonicParsing="false" text="Paste" />
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Select All" />
-                        <MenuItem mnemonicParsing="false" text="Unselect All" />
+                        <MenuItem mnemonicParsing="false" onAction="#launchMenu" text="Orders" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -57,14 +35,28 @@
         </MenuBar>
         <AnchorPane maxHeight="-1.0" maxWidth="-1.0" VBox.vgrow="ALWAYS">
             <children>
-                <Button layoutX="294.0" layoutY="336.0" mnemonicParsing="false" onAction="#buttonLaunch" text="Launch" />
-                <Pane fx:id="warehousePane" layoutX="15.0" layoutY="14.0" prefHeight="310.0" prefWidth="610.0" style="-fx-border-color: #000000;" />
-               <TextArea editable="false" layoutX="42.0" layoutY="368.0" prefHeight="133.0" prefWidth="559.0" text="-&gt;  Po kliknutí na tlačítko &quot;Launch&quot; sa načíta podklad skladu a zároveň aj obsah skladu z textových &#10;súborov warehouse.txt a stock.txt miestnených v adresári data&#10;-&gt; Po najetí kurzom myši na regál sa vypíše vo vyskakovacom okne jeho obsah, prípadne ak je &#10;prázdny vypíše sa &quot;Empty&quot;&#10;-&gt; Funguje aj pridávanie prekážok klinutím na štvorčeky vyznačené slabo-modrou čiarou, funguje&#10;aj hromadné uzavretie uličky, treba držať Shift a kliknúť na začiatok a koniec uličky, ktorú chcete&#10;uzavrieť" />
+<!--                <ZoomablePane fx:id="_zoomPane" layoutX="13.0" layoutY="14.0" prefHeight="355.0" prefWidth="615.0"></ZoomablePane>-->
+
+                <!--onScroll="#ScrollAction" onZoom="#zoomAction"-->
+                <ScrollPane fx:id="_scrollPane" layoutX="13.0" layoutY="14.0" prefHeight="355.0" prefWidth="615.0">
+                  <content>
+                      <Pane fx:id="warehousePane" cache="true" prefHeight="350.0" prefWidth="610.0" snapToPixel="false" style="-fx-border-color: #000000;" />
+                  </content>
+               </ScrollPane>
+                <Button layoutX="33.0" layoutY="405.0" mnemonicParsing="false" onAction="#buttonLaunch" prefHeight="49.0" prefWidth="91.0" text="Load" />
+               <Button layoutX="158.0" layoutY="405.0" mnemonicParsing="false" onAction="#buttonSimulate" prefHeight="49.0" prefWidth="91.0" text="Simulate" />
+               <ProgressIndicator layoutX="571.0" layoutY="430.0" progress="0.0" />
+               <ToggleButton layoutX="358.0" layoutY="430.0" mnemonicParsing="false" onAction="#ButtonPause" text="Pause" />
+               <Button layoutX="391.0" layoutY="393.0" mnemonicParsing="false" onAction="#Speed4x" text="4x" />
+               <Button layoutX="353.0" layoutY="393.0" mnemonicParsing="false" onAction="#Speed2x" text="2x" />
+               <Button layoutX="313.0" layoutY="393.0" mnemonicParsing="false" onAction="#Speed1x" text="1x" />
+               <Button layoutX="427.0" layoutY="393.0" mnemonicParsing="false" onAction="#Speed8x" text="8x" />
             </children>
         </AnchorPane>
     </children>
     </VBox>
    <columnConstraints>
+      <ColumnConstraints />
       <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>

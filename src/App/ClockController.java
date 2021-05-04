@@ -32,6 +32,7 @@ public class ClockController {
     private CartStruct.Trolley _trolley;
     private WarehouseStruct _workplace;
     private ShoppingCart _cart;
+    private int _cartId;
     private int _orderIndex;
     private CartStruct.Trolley.targetIndex.OnePoint _currentShelfToGo;
     private List<java.awt.Point> _coordList;
@@ -60,17 +61,6 @@ public class ClockController {
         }
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
-
-//        if(_allExecutors != null){
-//            for (ScheduledExecutorService modify: _allExecutors) {
-//                if ( != null)
-//                {
-//                    futureTask.cancel(true);
-//                }
-//
-//                futureTask = scheduledExecutorService.scheduleAtFixedRate(myTask, 0, time, TimeUnit.SECONDS);
-//            }
-//        }
     }
 
 
@@ -79,42 +69,33 @@ public class ClockController {
             for (ScheduledExecutorService toDestroy: _allExecutors) {
                 toDestroy.shutdown();
             }
-            _allExecutors = new ArrayList<>();
         }
-        else {
-            _allExecutors = new ArrayList<>();
-        }
+        _allExecutors = new ArrayList<>();
     }
 
     public static void Pause(){
         _pause = !_pause;
     }
 
-    public ClockController(CartStruct.Trolley trolley, WarehouseStruct workplace){
+    public ClockController(CartStruct.Trolley trolley, WarehouseStruct workplace, int id){
         _trolley = trolley;
         _workplace = workplace;
 
         _cart = new ShoppingCart(workplace,-1,10);
+        _cartId = id;
         _orderIndex = 0;
 
         //This will be moved to Controller class in production
-        WarehouseController.BoundCartToTrolley(0, _cart);
+        WarehouseController.BoundCartToTrolley(id, _cart);
         WarehouseController.AddTrolleyToolTip();
 
         Boolean inMotion = false;
         _currentShelfToGo = trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
 
-        //_coordList = _cart.getAStarCords(_currentShelfToGo.getY(), _currentShelfToGo.getX());
         // These will be used later
         _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-        _cart.planRoute(_cart.goal_x, _cart.goal_y); // shelfs are generated in reverse so we have to flip values
-        //_cart.planRoute(_cart.goal_x-1, _cart.goal_y); // shelfs are generated in reverse so we have to flip values
+        _cart.planRoute(_cart.goal_x, _cart.goal_y); /** shelfs are generated in reverse so we have to flip values*/
 
-
-        //_cart.planRoute(10, 16); // shelfs are generated in reverse so we have to flip values
-
-        int endOfWarehouse = _cart.warehouse.getCols() + _cart.warehouse.getCols() /2 + (_cart.warehouse.getCols()%2 == 0 ? 1 : 2);
-        //_cart.planRoute(_cart.warehouse.getCols(), _cart.goal_y);
 
         _coordList = _cart.coordList;
         _atWaypoint = 0;
@@ -129,7 +110,10 @@ public class ClockController {
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
 
         //TODO placeholder, delete
-        MoveTrolley(0, +20, -20);
+        if(_cartId == 0)
+            MoveTrolley(_cartId, +20, -20);
+        else
+            PlaceTrolley(_cartId, 10, 335);
 
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
@@ -139,66 +123,67 @@ public class ClockController {
     }
 
     private void TrolleyRoutine(){
-        if(!_pause){
-            if(_atWaypoint < _WaypointSize){
-                if (_cart.warehouse.closedPaths.contains(_coordList.get(_atWaypoint))){
-                    //if during walking found the next tile to be blocked,
-                    //recalculate route
-                    _cart.coordList.clear();
-                    _cart.coordIndex = 0;
-                    _cart.planRoute(_cart.goal_x, _cart.goal_y);
+        /** JavaFX things cannot be updated outside JavaFX thread */
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (!_pause) {
+                    if (_atWaypoint < _WaypointSize) {
+                        if (_cart.warehouse.closedPaths.contains(_coordList.get(_atWaypoint))) {
+                            //if during walking found the next tile to be blocked,
+                            //recalculate route
+                            _cart.coordList.clear();
+                            _cart.coordIndex = 0;
+                            _cart.planRoute(_cart.goal_x, _cart.goal_y);
 
-                    //reset these
-                    _coordList = _cart.coordList;
-                    _atWaypoint = 0;
-                    _WaypointSize = _coordList.size() - 1;
-                    return;
-                }
-
-                //first coordinate is the current position of trolley, skip it
-                _atWaypoint += 1;
-
-                _cart.coordIndex++;
-
-                int toGoX = _cart.coordList.get(_atWaypoint).x;
-                int toGoY = _cart.coordList.get(_atWaypoint).y;
-
-                //convenient method
-                MoveTrolleyFromTo(0, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
-
-                _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
-                _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
-            }
-            else {
-                System.out.println(_coordList);
-                //private
-                _orderIndex += 1;
-                if(_orderIndex < _trolley.allWaypoints.size()) {
-                    _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
-                    _cart.coordList =_cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
-                    _cart.coordIndex = 0;
-                    _atWaypoint = 0;
-                    _WaypointSize = _coordList.size() - 1;
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            TrolleyController.ActualizeRoute(0);
+                            //reset these
+                            _coordList = _cart.coordList;
+                            _atWaypoint = 0;
+                            _WaypointSize = _coordList.size() - 1;
+                            return;
                         }
-                    });
 
-                    //new Event(TrolleyController.ActualizeRoute(0));
+                        //first coordinate is the current position of trolley, skip it
+                        _atWaypoint += 1;
 
+                        _cart.coordIndex++;
+
+                        int toGoX = _cart.coordList.get(_atWaypoint).x;
+                        int toGoY = _cart.coordList.get(_atWaypoint).y;
+
+                        //convenient method
+                        MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+
+                        _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
+                        _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
+                    } else {
+                        System.out.println(_coordList);
+                        //private
+                        _orderIndex += 1;
+                        if (_orderIndex < _trolley.allWaypoints.size()) {
+                            /** TODO naložiť, ak je plný, poslať vyložiť a ptm poslať späť sa pohybovať po sklade */
+                            _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
+                            _cart.coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+                            _cart.coordIndex = 0;
+                            _atWaypoint = 0;
+                            _WaypointSize = _coordList.size() - 1;
+
+                            TrolleyController.ActualizeRoute(_cartId);
+
+
+                        }
+                        /** TODO move trolley to vyložiť náklad */
+                        else {
+                            _defaultExecutor.shutdown();
+                            //_executor.isTerminated()
+                            ;//exit procedure
+                        }
+                    }
                 }
-                else {
-                    _defaultExecutor.shutdown();
-                    //_executor.isTerminated()
-                    ;//exit procedure
-                }
-            }
-        }
+            }});
     }
 
-    public boolean get_pause() {
+    public static boolean get_pause() {
         return _pause;
     }
 
