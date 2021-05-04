@@ -7,6 +7,7 @@
 
 package App;
 
+import Reader.CartStruct;
 import Reader.WarehouseStruct;
 import store.ShoppingCart;
 
@@ -21,9 +22,9 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class WarehouseController {
     private static List<Rectangle> rects;
@@ -48,7 +49,8 @@ public class WarehouseController {
     private static double Liney;
 
     private static boolean RuntimePropsSet = false;
-    protected static WarehouseStruct _controlledWarehouse; //for setting blockages via GUI
+    protected static WarehouseStruct _controlledWarehouse; //for setting blockages via
+    protected static Pane _warehousePane;
 
     public static enum Direction{
         left,
@@ -87,6 +89,7 @@ public class WarehouseController {
     }
 
     public static void PaneDraw(int rows, int cols, Pane warehousePane){
+        _warehousePane = warehousePane;
 
         CreateResuplyArea(warehousePane);
         CreateTrolleys(warehousePane, 5);
@@ -287,7 +290,14 @@ public class WarehouseController {
             return; //we don't allow more than 10 trolleys
         }
         if(Trolleys != null){
-            warehousePane.getChildren().removeAll(Trolleys);
+            //doesn't work
+            //warehousePane.getChildren().removeAll(Trolleys.stream().map(TrolleyGrid -> TrolleyGrid._route).collect(Collectors.toList()));
+            //warehousePane.getChildren().removeAll(Trolleys);
+            for (TrolleyGrid t: Trolleys) {
+                if (t._route != null)
+                    warehousePane.getChildren().removeAll(t._route);
+                warehousePane.getChildren().removeAll(t);
+            }
         }
         Trolleys = new ArrayList<TrolleyGrid>();
         double canvasHeight = warehousePane.getHeight();
@@ -315,7 +325,7 @@ public class WarehouseController {
                     }
                     else{
                         trolley._route = new ArrayList<>();
-                        PrintRoute(trolley.boundedCart.coordList, warehousePane, trolley);
+                        TrolleyController.PrintRoute(trolley.boundedCart.coordList, warehousePane, trolley, trolley.boundedCart.coordIndex);
                         trolley.isRoutePrinted = true;
                     }
                 }
@@ -332,57 +342,6 @@ public class WarehouseController {
         }
     }
 
-    public static void PrintRoute(List<Point> coordList, Pane warehousePane, TrolleyGrid trolley){
-        if (coordList == null)
-            return;
-
-        int previous_x = coordList.get(0).x;
-        int previous_y = coordList.get(0).y;
-
-        double LineStartX = trolley.getX()+5;
-        double LineStartY = trolley.getY()+5;
-        Direction where;
-        UnitOfShift length;
-
-        for (Point p: coordList) {
-            if(previous_x == p.x && previous_y == p.y)
-                continue;
-
-            length = TrolleyController.GetMovementUnit(previous_x, previous_y, p.x, p.y);
-            Line RouteChunk;
-
-            if(previous_x > p.x){
-                RouteChunk = new Line(LineStartX, LineStartY, LineStartX-length.measure, LineStartY);
-                LineStartX = LineStartX - length.measure;
-            }
-            else if(previous_x < p.x){
-                RouteChunk = new Line(LineStartX, LineStartY, LineStartX+length.measure, LineStartY);
-                LineStartX = LineStartX + length.measure;
-            }
-            else if(previous_y > p.y){
-                RouteChunk = new Line(LineStartX, LineStartY, LineStartX, LineStartY - length.measure);
-                LineStartY = LineStartY - length.measure;
-            }
-            else {
-                RouteChunk = new Line(LineStartX, LineStartY, LineStartX, LineStartY + length.measure);
-                LineStartY = LineStartY + length.measure;
-            }
-
-            //Line RouteChunk = new Line(LineStartX, LineStartY, LineStartX+lenght.measure, LineStartY+lenght.measure);
-            RouteChunk.setStroke(Color.BLUE);
-            RouteChunk.setStrokeWidth(5);
-            warehousePane.getChildren().add(RouteChunk);
-            RouteChunk.toBack();
-            trolley._route.add(RouteChunk);
-
-            previous_x = p.x;
-            previous_y = p.y;
-
-            //Line RayCast_toBlock = new Line(0, 100, 400, 20);
-        }
-
-        //Line RayCast_toBlock = new Line(0, 100, 400, 20);
-    }
 
     public static void BoundCartToTrolley(int id, ShoppingCart cart){
         if(id >= Trolleys.size())

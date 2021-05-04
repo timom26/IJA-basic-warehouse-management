@@ -1,6 +1,15 @@
 package App;
 
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventType;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+
+import java.awt.*;
+import java.util.List;
 
 
 public class TrolleyController {
@@ -62,8 +71,6 @@ public class TrolleyController {
     }
 
 
-
-
     /**
      * Move trolley up, down, left, right based on the differences of indexes
      * @param trolleyId
@@ -95,9 +102,89 @@ public class TrolleyController {
                 GetMovementUnit(xFrom, yFrom, xTo, yTo),
                 where);
 
-        //This just skippes rectangle in between
-//        if(xFrom%2 != 0){
-//            movable.setX(movable.getX()+10);
-//        }
     }
+
+    /**
+     *
+     * @param coordList contains route to print
+     * @param warehousePane Pane
+     * @param trolley Rectangle
+     */
+    public static void PrintRoute(List<Point> coordList, Pane warehousePane, WarehouseController.TrolleyGrid trolley, int startIndex){
+        if (coordList == null)
+            return;
+
+        int previous_x = coordList.get(startIndex).x;
+        int previous_y = coordList.get(startIndex).y;
+
+        double LineStartX = trolley.getX()+5;
+        double LineStartY = trolley.getY()+5;
+        WarehouseController.UnitOfShift length;
+
+        int end = coordList.size();
+
+
+        for (Point p; startIndex < end; startIndex++){
+            p = coordList.get(startIndex);
+
+            if(previous_x == p.x && previous_y == p.y)
+                continue;
+
+            length = TrolleyController.GetMovementUnit(previous_x, previous_y, p.x, p.y);
+            Line RouteChunk;
+
+            if(previous_x > p.x){
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX-length.measure, LineStartY);
+                LineStartX = LineStartX - length.measure;
+            }
+            else if(previous_x < p.x){
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX+length.measure, LineStartY);
+                LineStartX = LineStartX + length.measure;
+            }
+            else if(previous_y > p.y){
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX, LineStartY - length.measure);
+                LineStartY = LineStartY - length.measure;
+            }
+            else {
+                RouteChunk = new Line(LineStartX, LineStartY, LineStartX, LineStartY + length.measure);
+                LineStartY = LineStartY + length.measure;
+            }
+
+            //Line RouteChunk = new Line(LineStartX, LineStartY, LineStartX+lenght.measure, LineStartY+lenght.measure);
+            RouteChunk.setStroke(Color.BLUE);
+            RouteChunk.setStrokeWidth(5);
+            warehousePane.getChildren().add(RouteChunk);
+            RouteChunk.toBack();
+            trolley._route.add(RouteChunk);
+
+            previous_x = p.x;
+            previous_y = p.y;
+        }
+    }
+
+    public static void ActualizeRoute(int trolleyId){
+        WarehouseController.TrolleyGrid tmp;
+
+        if(!(tmp = WarehouseController.Trolleys.get(trolleyId)).isRoutePrinted)
+            return;
+
+        //(WarehouseController._warehousePane.)getChildren().removeAll(tmp._route);
+        try {
+            WarehouseController._warehousePane.getChildren().removeAll(tmp._route);
+            //Controller.WWW.getChildren().removeAll(tmp._route);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return;
+        }
+        //Controller.WWW.getChildren().removeAll(tmp._route);
+        PrintRoute(tmp.boundedCart.coordList,
+         //       Controller.WWW,
+                WarehouseController._warehousePane,
+                tmp,
+                tmp.boundedCart.coordIndex);
+        return;
+    }
+
 }

@@ -26,6 +26,7 @@ public class Controller {
     //public ZoomablePane _zoomPane;
     public ScrollPane _scrollPane;
     public Pane warehousePane;
+    public static Pane WWW;
     private WarehouseStruct _workplace;
     private List<ClockController> _inMotion;
     private boolean paused = false;
@@ -37,8 +38,10 @@ public class Controller {
      * After that it generates a graphical interface to see current status
      * of warehouse.
      */
+
     public void buttonLaunch() {
         // clear possible ongoing simulation
+        WWW = warehousePane;
         ClockController.DispatchAll();
         _inMotion = null;
 
@@ -58,38 +61,26 @@ public class Controller {
                 WarehouseController.AddShelfToolTip(depot);
                 WarehouseController.SetWarehouse(_workplace);
 
-                //_zoomPane.setContent(_scrollPane);
-                //_zoomPane.prefWidth(610);
                 ZoomController.SetProperties(_scrollPane);
                 Read.ReadRequests(depot.shelves, depot.goods, null, depot.getRows(), depot.getCols());
 
-                //warehousePane.setOnScroll();
             }
         }
 
     }
 
     public void buttonSimulate() {
-        //WarehouseStruct depot = new WarehouseStruct();
-        //CartStruct allCarts = new CartStruct();
-
-
-
         if(_inMotion != null){
-            ClockController.DispatchAll();
+            //return, you have to click load first
+            return;
+            //ClockController.DispatchAll();
         }
         _inMotion = new ArrayList<ClockController>();
 
-        CartStruct.Trolley tmpTrolley = CartStruct.allOrders.get(0);
-
-        ClockController tmp = new ClockController(tmpTrolley, _workplace);
-        _inMotion.add(tmp);
-
-//        for (CartStruct.Trolley _trolley : CartStruct.allOrders) {
-//
-//            TrolleyRoutine(_trolley);
-//
-//        }
+        for (CartStruct.Trolley trolley : CartStruct.allOrders) {
+            ClockController tmp = new ClockController(trolley, _workplace);
+            _inMotion.add(tmp);
+        }
 
     }
 

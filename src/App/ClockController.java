@@ -3,6 +3,8 @@ package App;
 import Reader.CartStruct;
 import Reader.AStarNode;
 import Reader.WarehouseStruct;
+import javafx.application.Platform;
+import javafx.event.Event;
 import store.ShoppingCart;
 
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static App.TrolleyController.*;
 
 public class ClockController {
 
@@ -114,7 +118,7 @@ public class ClockController {
 
         _coordList = _cart.coordList;
         _atWaypoint = 0;
-        _WaypointSize = _coordList.size();
+        _WaypointSize = _coordList.size() - 1; // we do this because we skip the first point
 
         _defaultExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -125,7 +129,7 @@ public class ClockController {
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
 
         //TODO placeholder, delete
-        TrolleyController.MoveTrolley(0, +20, -20);
+        MoveTrolley(0, +20, -20);
 
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
@@ -136,7 +140,7 @@ public class ClockController {
 
     private void TrolleyRoutine(){
         if(!_pause){
-            if(_atWaypoint <= _WaypointSize){
+            if(_atWaypoint < _WaypointSize){
                 if (_cart.warehouse.closedPaths.contains(_coordList.get(_atWaypoint))){
                     //if during walking found the next tile to be blocked,
                     //recalculate route
@@ -147,9 +151,11 @@ public class ClockController {
                     //reset these
                     _coordList = _cart.coordList;
                     _atWaypoint = 0;
-                    _WaypointSize = _coordList.size();
+                    _WaypointSize = _coordList.size() - 1;
                     return;
                 }
+
+                //first coordinate is the current position of trolley, skip it
                 _atWaypoint += 1;
 
                 _cart.coordIndex++;
@@ -157,33 +163,31 @@ public class ClockController {
                 int toGoX = _cart.coordList.get(_atWaypoint).x;
                 int toGoY = _cart.coordList.get(_atWaypoint).y;
 
-                //Move trolley up, down, left, right based on the differences of indexes
-//                if(_cart.coord_x > toGoX){
-//                    WarehouseController.MoveTrolley(0,-20,0);
-//                }
-//                else if(_cart.coord_x < toGoX){
-//                    WarehouseController.MoveTrolley(0,+20,0);
-//                }
-//                else if(_cart.coord_y > toGoY){
-//                    WarehouseController.MoveTrolley(0,0,-20);
-//                }
-//                else {
-//                    WarehouseController.MoveTrolley(0,0,20);
-//                }
-
                 //convenient method
-                TrolleyController.MoveTrolleyFromTo(0, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+                MoveTrolleyFromTo(0, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
 
                 _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
                 _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
-
             }
             else {
+                System.out.println(_coordList);
                 //private
                 _orderIndex += 1;
                 if(_orderIndex < _trolley.allWaypoints.size()) {
                     _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
-                    _coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+                    _cart.coordList =_cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+                    _cart.coordIndex = 0;
+                    _atWaypoint = 0;
+                    _WaypointSize = _coordList.size() - 1;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            TrolleyController.ActualizeRoute(0);
+                        }
+                    });
+
+                    //new Event(TrolleyController.ActualizeRoute(0));
+
                 }
                 else {
                     _defaultExecutor.shutdown();
@@ -201,26 +205,6 @@ public class ClockController {
     public void set_pause(boolean _pause) {
         this._pause = _pause;
     }
-
-//    public static void TrolleyMovement(CartStruct.Trolley trolley, WarehouseStruct workplace){
-//        ScheduledExecutorService defaultExecService = Executors.newSingleThreadScheduledExecutor();
-//
-//        defaultExecService.scheduleAtFixedRate(ClockController.TrolleyRoutine(trolley,workplace), 0, 1, TimeUnit.SECONDS);
-//    }
-
-
-//    protected class TrolleyRoutine{
-//        private int x;
-//        private int y;
-//
-//        TrolleyRoutine(){
-//
-//
-//        }
-//
-//    }
-
-
 
 }
 
