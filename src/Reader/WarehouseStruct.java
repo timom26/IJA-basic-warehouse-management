@@ -191,6 +191,11 @@ public class WarehouseStruct {
                         //System.out.println("returning ");
                         Collections.reverse(coordsList);//so it goes from cart to target
                         coordsList.add(endPoint);
+                        System.out.print("AStar found a following way: ");
+                        for (Point p : coordsList) {
+                            System.out.print(" [" + p.x +"," + p.y + "] ");
+                        }
+                        System.out.println();
                         return  coordsList;
                     }
                 }
@@ -330,7 +335,7 @@ public class WarehouseStruct {
                 p3.y = point.y - 1;
                 p3_set = true;
             }
-            p4_set = true;//always down
+            p4_set = true;//always down to garages
             p4.x = point.x;
             p4.y = point.y +1;
         }

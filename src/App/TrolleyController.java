@@ -48,18 +48,23 @@ public class TrolleyController {
      * @param where direction of travel
      */
     public static void MoveTrolleyByUnit(Rectangle trolley, WarehouseController.UnitOfShift unit, WarehouseController.Direction where){
+        System.out.print("MoveTrolley: unit.measure:" + unit.measure + " X:" + trolley.getX() + " Y:" + trolley.getY() + " direction: ");
         switch (where){
             case left:
                 trolley.setX(trolley.getX()-unit.measure);
+                System.out.println("left");
                 break;
             case right:
                 trolley.setX(trolley.getX()+unit.measure);
+                System.out.println("right");
                 break;
             case up:
                 trolley.setY(trolley.getY()-unit.measure);
+                System.out.println("up");
                 break;
             case down:
                 trolley.setY(trolley.getY()+unit.measure);
+                System.out.println("down");
                 break;
         }
     };

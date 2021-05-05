@@ -68,7 +68,6 @@ public class Controller {
 
             }
         }
-
     }
 
     public void buttonSimulate() {
