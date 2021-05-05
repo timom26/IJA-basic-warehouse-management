@@ -110,7 +110,7 @@ public class Controller {
      */
 
     public void Speed1x(){
-        ClockController.SetTime(1000);
+        ClockController.SetTime(1000); //1000ms = 1 second per single tick
         ClockController.UpdateTimer(_inMotion);
     }
 
