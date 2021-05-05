@@ -1,0 +1,4 @@
+1 Jablka 10 , Zidle 2
+2 Zidle 3
+3 Jablka 10
+4 Pohovky 4

@@ -41,6 +41,7 @@
             </manifest>
             <zipgroupfileset dir="lib" includes="**/*.jar"/>
             <fileset file="data/sample.fxml"/>
+            <fileset file="data/menu.fxml"/>
         </jar>
         <antcall target="generate-javadoc"/>
     </target>

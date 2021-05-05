@@ -168,8 +168,8 @@ public class WarehouseController {
         double maxX = canvasWidth;
         double maxY = canvasHeight - stepGrid;
 
-        int index_X = 0;
-        int index_Y = 1;
+        int index_X = -1;
+        int index_Y = 0;
 
         boolean even = false;
 
@@ -180,7 +180,7 @@ public class WarehouseController {
                 warehousePane.getChildren().add(grid);
                 grid.toBack();
             }
-            index_Y = 1;
+            index_Y = 0;
             even = !even;
             if(even)
                 index_X += 3;
@@ -188,8 +188,8 @@ public class WarehouseController {
                 index_X += 1;
         }
 
-        index_X = 0;
-        index_Y = 0;
+        index_X = -1;
+        index_Y = -1;
 
         even = false;
         boolean touchingShelves = false; // for drawing grid that touches shelves
@@ -218,8 +218,8 @@ public class WarehouseController {
 
                 countToTWO++;
             }
-            index_X = 0;
-            index_Y = cols + 1;
+            index_X = -1;
+            index_Y = rows;
         }
 
 
