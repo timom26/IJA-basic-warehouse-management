@@ -170,4 +170,56 @@ public class Read {
             return false;
         }
     }
+
+    public static boolean RequestViaGUI(String request, int trolleyID, List wareHouse, List allGoods, int rowsMax, int colsMax, boolean Reset){
+        Scanner field = new Scanner(request);
+        CartStruct AllCarts = new CartStruct();
+        //for now
+        if(Reset){
+            AllCarts.Reset();
+            AllCarts.AddOrder(trolleyID);
+        }
+        else {
+            AllCarts.AddOrReplaceOrder(trolleyID);
+        }
+
+        String productName;
+        int amount;
+        try {
+            while (field.hasNext()) {
+                productName = field.next();
+                amount = Integer.parseInt(field.next());
+
+                String finalProductName = productName;
+                //Optional hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst();
+                Object hell;
+
+                if (allGoods.stream().anyMatch(o -> (((Goods) o).getName().equals(finalProductName)))) {
+                    hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst().get();
+                    System.out.println(((Goods) hell).getName());
+                    System.out.println("бутылочка");
+
+                    for (int row = 0; row < rowsMax; row++) {
+                        for (int coll = 0; coll < colsMax; coll++) {
+                            if (((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) hell))) {
+                                AllCarts.AddGoodsIndexToCart(trolleyID, row, coll, productName, amount);
+                                //return true; //TODO return list or struct or what else
+                                // TODO but Really I should make a Class for this thing
+                            }
+                        }
+                    }
+
+                } else {
+                    System.out.println("лютики");
+                }
+            }
+            return true;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

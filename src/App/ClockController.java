@@ -116,10 +116,10 @@ public class ClockController {
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
 
         //TODO placeholder, delete
-        if(_cartId == 0)
-            MoveTrolley(_cartId, +20, -20);
-        else
-            PlaceTrolley(_cartId, 5, 320);
+//        if(_cartId == 0)
+//            MoveTrolley(_cartId, +20, -20);
+//        else
+            PlaceTrolley(_cartId, 5, 315);
 
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, (_cartId - 1) *100, _delay, TimeUnit.MILLISECONDS);

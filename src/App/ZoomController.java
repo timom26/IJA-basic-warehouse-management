@@ -8,10 +8,7 @@ public class ZoomController {
 
     public static void SetProperties(ScrollPane MainPane){
 
-        MainPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        MainPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         MainPane.setScaleShape(true);
-
         Pane content = ((Pane) MainPane.getContent());
 
         content.setOnScroll(event -> {

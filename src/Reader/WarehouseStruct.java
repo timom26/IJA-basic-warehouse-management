@@ -6,6 +6,7 @@
  */
 package Reader;
 import javafx.util.Pair;
+import store.Goods;
 import store.Shelf;
 
 import javax.management.ValueExp;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
@@ -25,7 +27,7 @@ import static java.lang.Math.sqrt;
  * */
 public class WarehouseStruct {
     public List shelves = new ArrayList();
-    public List goods = new ArrayList();
+    public List<Goods> goods = new ArrayList();
     public List<Point> closedPaths = new ArrayList<>();
     private int rows;
     private int cols;
@@ -38,6 +40,10 @@ public class WarehouseStruct {
      */
     public String PrintGoods(int row, int coll){
         return ((Shelf) ((ArrayList) shelves.get(row)).get(coll)).getAll();
+    }
+
+    public List GetGoodsNames(){
+        return goods.stream().map(Goods::getName).sorted().collect(Collectors.toList());
     }
 
     /**

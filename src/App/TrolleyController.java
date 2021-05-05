@@ -67,7 +67,7 @@ public class TrolleyController {
                     else
                         return WarehouseController.UnitOfShift.shelfWidth;
                 default:
-                    return WarehouseController.UnitOfShift.Err;
+                    return WarehouseController.UnitOfShift.gridSize;
             }
         }
         else {

@@ -17,6 +17,20 @@ public class CartStruct {
         allCarts = new ArrayList<>();
     }
 
+    public boolean AddOrReplaceOrder(int id){
+        if(allOrders.size() < id){
+            Trolley newTrolley = new Trolley();
+            allOrders.add(newTrolley);
+            return true;
+        }
+        else{
+            Trolley newTrolley = new Trolley();
+            allOrders.remove(id - 1);
+            allOrders.add(id - 1, newTrolley);
+            return true;
+        }
+    }
+
     public boolean AddOrder(int id){
         if(allOrders.size() < id){
             Trolley newTrolley = new Trolley();

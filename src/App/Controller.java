@@ -33,7 +33,7 @@ public class Controller {
     //public ZoomablePane _zoomPane;
     public ScrollPane _scrollPane;
     public Pane warehousePane;
-    private WarehouseStruct _workplace;
+    private static WarehouseStruct _workplace;
     private List<ClockController> _inMotion;
     private boolean paused = false;
 
@@ -87,18 +87,25 @@ public class Controller {
 
     }
 
+    public List GetNamesOfGoodsForSpinner(){
+        return _workplace.GetGoodsNames();
+    }
+
     public void launchMenu() throws IOException {
         if(!ClockController.get_pause())
             ClockController.Pause();
         Stage menu = new Stage();
         menu.initModality(Modality.APPLICATION_MODAL);
         FXMLLoader fxmlLoader = new FXMLLoader();
+
         //TODO menu Controller
         //fxmlLoader.setController(new Controller());
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("menu.fxml"));
+        Parent root = fxmlLoader.load(getClass().getClassLoader().getResource("menu.fxml"));
         menu.setTitle("Menu");
         menu.setScene(new Scene(root, 500, 270));
         menu.show();
+        //if(_workplace != null)
+            //((MenuController) fxmlLoader.getController()).SetGoods(_workplace);
     }
 
     public void ButtonPause(){
