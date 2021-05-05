@@ -59,7 +59,6 @@ public class CartStruct {
             if(allWaypoints.stream().anyMatch(o -> o.GoodsName.equals(GoodsName))){
                 targetIndex tmp = allWaypoints.stream().filter(o -> o.GoodsName.contentEquals(GoodsName)).findFirst().get();
                 tmp.AddPoints(row, coll);
-                allWaypoints.add(tmp);
             }
             /** Create new index with name and amount */
             else {

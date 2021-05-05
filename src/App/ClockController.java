@@ -97,9 +97,9 @@ public class ClockController {
         _cart.planRoute(_cart.goal_x, _cart.goal_y); /** shelfs are generated in reverse so we have to flip values*/
 
 
-        _coordList = _cart.coordList;
+        //_coordList = _cart.coordList;
         _atWaypoint = 0;
-        _WaypointSize = _coordList.size() - 1; // we do this because we skip the first point
+        _WaypointSize = _cart.coordList.size() - 1; // we do this because we skip the first point
 
         _defaultExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -124,63 +124,78 @@ public class ClockController {
 
     private void TrolleyRoutine(){
         /** JavaFX things cannot be updated outside JavaFX thread */
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                if (!_pause) {
-                    if (_atWaypoint < _WaypointSize) {
-                        if (_cart.warehouse.closedPaths.contains(_coordList.get(_atWaypoint))) {
-                            //if during walking found the next tile to be blocked,
-                            //recalculate route
-                            _cart.coordList.clear();
-                            _cart.coordIndex = 0;
-                            _cart.planRoute(_cart.goal_x, _cart.goal_y);
+        try {
+            Platform.runLater(new Runnable() {
 
-                            //reset these
-                            _coordList = _cart.coordList;
-                            _atWaypoint = 0;
-                            _WaypointSize = _coordList.size() - 1;
-                            return;
-                        }
+                @Override
+                public void run() {
+                    if (!_pause && !_defaultExecutor.isTerminated()) {
+                        if (_atWaypoint < _WaypointSize) {
+                            if (_cart.warehouse.closedPaths.contains(_cart.coordList.get(_atWaypoint))) {
+                                //if during walking found the next tile to be blocked,
+                                //recalculate route
+                                _cart.coordList.clear();
+                                _cart.coordIndex = 0;
+                                _cart.planRoute(_cart.goal_x, _cart.goal_y);
 
-                        //first coordinate is the current position of trolley, skip it
-                        _atWaypoint += 1;
+                                //reset these
+                                _atWaypoint = 0;
+                                _WaypointSize = _cart.coordList.size() - 1;
+                                return;
+                            }
 
-                        _cart.coordIndex++;
+                            //first coordinate is the current position of trolley, skip it
+                            _atWaypoint += 1;
 
-                        int toGoX = _cart.coordList.get(_atWaypoint).x;
-                        int toGoY = _cart.coordList.get(_atWaypoint).y;
+                            _cart.coordIndex++;
 
-                        //convenient method
-                        MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+                            //int toGoX, toGoY
 
-                        _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
-                        _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
-                    } else {
-                        System.out.println(_coordList);
-                        //private
-                        _orderIndex += 1;
-                        if (_orderIndex < _trolley.allWaypoints.size()) {
-                            /** TODO naložiť, ak je plný, poslať vyložiť a ptm poslať späť sa pohybovať po sklade */
-                            _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
-                            _cart.coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
-                            _cart.coordIndex = 0;
-                            _atWaypoint = 0;
-                            _WaypointSize = _coordList.size() - 1;
+                            int toGoX = _cart.coordList.get(_atWaypoint).x;
+                            int toGoY = _cart.coordList.get(_atWaypoint).y;
 
-                            TrolleyController.ActualizeRoute(_cartId);
+                            //convenient method
+                            MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+
+                            _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
+                            _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
+
+                        } else {
+                            System.out.println(_coordList);
+                            //private
+                            _orderIndex += 1;
+                            if (_orderIndex < _trolley.allWaypoints.size()) {
+                                /** TODO naložiť, ak je plný, poslať vyložiť a ptm poslať späť sa pohybovať po sklade */
+                                _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
+                                _cart.coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+                                _cart.coordIndex = 0;
+                                _atWaypoint = 0;
+                                _WaypointSize = _cart.coordList.size() - 1;
+
+                                TrolleyController.ActualizeRoute(_cartId);
 
 
-                        }
-                        /** TODO move trolley to vyložiť náklad */
-                        else {
-                            _defaultExecutor.shutdown();
-                            //_executor.isTerminated()
-                            ;//exit procedure
+                            }
+                            /** TODO move trolley to vyložiť náklad */
+                            else {
+//                            if(futureTask != null){
+//                                futureTask.cancel(true);
+//                            }
+                                _defaultExecutor.shutdownNow();
+                                //_executor.isTerminated()
+                                ;//exit procedure
+                            }
                         }
                     }
                 }
-            }});
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            e.getMessage();
+            return;
+
+        }
     }
 
     public static boolean get_pause() {
