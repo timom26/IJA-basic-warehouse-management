@@ -131,6 +131,7 @@ public class ClockController {
                 public void run() {
                     if (!_pause && !_defaultExecutor.isTerminated()) {
                         if (_atWaypoint < _WaypointSize) {
+                            _atWaypoint += 1;
                             if (_cart.warehouse.closedPaths.contains(_cart.coordList.get(_atWaypoint))) {
                                 //if during walking found the next tile to be blocked,
                                 //recalculate route
@@ -145,7 +146,6 @@ public class ClockController {
                             }
 
                             //first coordinate is the current position of trolley, skip it
-                            _atWaypoint += 1;
 
                             _cart.coordIndex++;
 
