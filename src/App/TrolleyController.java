@@ -13,7 +13,12 @@ import java.util.List;
 
 
 public class TrolleyController {
-
+    /**
+     * @brief change position of a trolley
+     * @param trolleyId id of given trolley
+     * @param x
+     * @param y
+     */
     public static void MoveTrolley(int trolleyId, int x, int y){
         if(WarehouseController.Trolleys.size() < trolleyId)
             return;
@@ -22,6 +27,12 @@ public class TrolleyController {
         movable.setY(movable.getY()+y);
     }
 
+    /**
+     * @brief first initioalisation of position of the given trolley
+      * @param trolleyId id of given trolley
+     * @param x
+     * @param y
+     */
     public static void PlaceTrolley(int trolleyId, int x, int y){
         if(WarehouseController.Trolleys.size() < trolleyId)
             return;
@@ -30,23 +41,43 @@ public class TrolleyController {
         movable.setY(y);
     }
 
+    /**
+     * @brief change position of a trolley to a given direction by a single tile size
+     * @param trolley id of trolley to be shifted
+     * @param unit graphical shift
+     * @param where direction of travel
+     */
     public static void MoveTrolleyByUnit(Rectangle trolley, WarehouseController.UnitOfShift unit, WarehouseController.Direction where){
+        System.out.print("MoveTrolley: unit.measure:" + unit.measure + " X:" + trolley.getX() + " Y:" + trolley.getY() + " direction: ");
         switch (where){
             case left:
                 trolley.setX(trolley.getX()-unit.measure);
+                System.out.println("left");
                 break;
             case right:
                 trolley.setX(trolley.getX()+unit.measure);
+                System.out.println("right");
                 break;
             case up:
                 trolley.setY(trolley.getY()-unit.measure);
+                System.out.println("up");
                 break;
             case down:
                 trolley.setY(trolley.getY()+unit.measure);
+                System.out.println("down");
                 break;
         }
     };
 
+
+    /**
+     * @brief help function to calculate graphical shift of a given trolley
+     * @param xFrom
+     * @param yFrom
+     * @param xTo
+     * @param yTo
+     * @return
+     */
     public static WarehouseController.UnitOfShift GetMovementUnit(int xFrom, int yFrom, int xTo, int yTo){
         int moduloFromX = xFrom%4;
         int moduloToX = xTo%4;
@@ -113,7 +144,7 @@ public class TrolleyController {
     }
 
     /**
-     *
+     * @brief show route graphically as a line
      * @param coordList contains route to print
      * @param warehousePane Pane
      * @param trolley Rectangle
@@ -170,6 +201,9 @@ public class TrolleyController {
         }
     }
 
+    /** @brief function is called to redraw a graphical route, if the route was changed
+     * @param trolleyId
+     */
     public static void ActualizeRoute(int trolleyId){
         WarehouseController.TrolleyGrid tmp;
 

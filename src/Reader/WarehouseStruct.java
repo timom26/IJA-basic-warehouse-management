@@ -157,7 +157,6 @@ public class WarehouseStruct {
             System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
             throw new InvalidParameterException("unknown parameter in function getAStarCoords");
         }
-        //System.out.println(" " + startPoint + endPoint);
         List<AStarNode> alreadyExpanded = new ArrayList<>();
         List<AStarNode> queue = new ArrayList<>();
         List<Point> coordsList = new ArrayList<>();//results
@@ -165,10 +164,10 @@ public class WarehouseStruct {
         queue.add(startNode);
         System.out.println("AStarnode is looking for way to: " + endPoint);
         while(true){
-            System.out.print("the queue is: ");
+            /*System.out.print("the queue is: ");
             for (AStarNode n : queue) {
                 System.out.print("  " + n.getPoint());
-            }System.out.println();
+            }System.out.println();*/
 
             if (queue.isEmpty()){
                 return coordsList;//empty one, did not find the way
@@ -198,6 +197,11 @@ public class WarehouseStruct {
                         //System.out.println("returning ");
                         Collections.reverse(coordsList);//so it goes from cart to target
                         coordsList.add(endPoint);
+                        System.out.print("AStar found a following way: ");
+                        for (Point p : coordsList) {
+                            System.out.print(" [" + p.x +"," + p.y + "] ");
+                        }
+                        System.out.println();
                         return  coordsList;
                     }
                 }
@@ -337,7 +341,7 @@ public class WarehouseStruct {
                 p3.y = point.y - 1;
                 p3_set = true;
             }
-            p4_set = true;//always down
+            p4_set = true;//always down to garages
             p4.x = point.x;
             p4.y = point.y +1;
         }
@@ -369,7 +373,7 @@ public class WarehouseStruct {
                 returnList.add(p4);
             }
         }
-        System.out.println("  neighbours of " + point + " are " + returnList);
+        //System.out.println("  neighbours of " + point + " are " + returnList);
         return returnList;
     }
 

@@ -92,7 +92,7 @@ public class WarehouseController {
         _warehousePane = warehousePane;
 
         CreateResuplyArea(warehousePane);
-        CreateTrolleys(warehousePane, 5);
+        CreateTrolleys(warehousePane, 1);
 
         if(rects != null)
             warehousePane.getChildren().removeAll(rects);
@@ -158,13 +158,14 @@ public class WarehouseController {
 
 
     public static void DrawGrid(int rows, int cols, Pane warehousePane){
+        //remove all blockages
         if(ObstacleGrid != null)
             warehousePane.getChildren().removeAll(ObstacleGrid);
         ObstacleGrid = new ArrayList<BlockableGrid> ();
 
+        //set canvas dimensions
         double canvasHeight = warehousePane.getHeight() - 20;
         double canvasWidth = warehousePane.getWidth();
-
         double maxX = canvasWidth;
         double maxY = canvasHeight - stepGrid;
 
@@ -286,9 +287,13 @@ public class WarehouseController {
     }
 
     public static void CreateTrolleys(Pane warehousePane, int howMany){
+
+        //argument parsing
         if(howMany > 10){
             return; //we don't allow more than 10 trolleys
         }
+
+        //delete trolleys if any other trolleys exist
         if(Trolleys != null){
             //doesn't work
             //warehousePane.getChildren().removeAll(Trolleys.stream().map(TrolleyGrid -> TrolleyGrid._route).collect(Collectors.toList()));
@@ -299,13 +304,15 @@ public class WarehouseController {
                 warehousePane.getChildren().removeAll(t);
             }
         }
+
+        //get parameters
         Trolleys = new ArrayList<TrolleyGrid>();
         double canvasHeight = warehousePane.getHeight();
         double canvasWidth = warehousePane.getWidth();
 
         int x = 5;
-
-        for(int counter = 0; counter <= howMany; counter++ ){
+        //Note by Tim, 5.5.2021 18:45: changed <= to <, because we want to count amount of carts from 1, not zero
+        for(int counter = 0; counter < howMany; counter++ ){
             TrolleyGrid trolley = new TrolleyGrid(x, canvasHeight-15, 10, 10);
             //TrolleyGrid trolley = new TrolleyGrid(x, canvasHeight-30, 10, 10);
             trolley.setFill(Color.CORAL);
@@ -313,7 +320,7 @@ public class WarehouseController {
             trolley.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>(){
                 @Override
                 public void handle(MouseEvent event) {
-                    System.out.println("We here");
+                    System.out.println("We here at coords: [" + trolley.boundedCart.coord_x + ", " + trolley.boundedCart.coord_y + "]");
 
                     if(trolley.boundedCart == null)
                         return;

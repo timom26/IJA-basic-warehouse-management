@@ -55,7 +55,6 @@ public class ClockController {
         }
     }
 
-
     public void changeTime(){
         if(this.futureTask != null){
             futureTask.cancel(true);
@@ -64,7 +63,9 @@ public class ClockController {
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
     }
 
-
+    /**
+     * @brief return all carts to starting positions
+     */
     public static void DispatchAll(){
         if(_allExecutors != null){
             for (ScheduledExecutorService toDestroy: _allExecutors) {
@@ -78,6 +79,12 @@ public class ClockController {
         _pause = !_pause;
     }
 
+    /**
+     * @brief main function for guidance and control of a cart. these assistive functions are centered in struct trolley
+     * @param trolley
+     * @param workplace
+     * @param id
+     */
     public ClockController(CartStruct.Trolley trolley, WarehouseStruct workplace, int id){
         _trolley = trolley;
         _workplace = workplace;
@@ -96,15 +103,16 @@ public class ClockController {
         // These will be used later
         _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
 
+        //get route to target
         Point from = new Point(_cart.coord_x, _cart.coord_y);
         Point where = new Point(_cart.goal_x, _cart.goal_y);
-
         _cart.coordList = _cart.warehouse.getAStarCoords(from,where, "shelf");
         //_cart.planRoute(_cart.goal_x, _cart.goal_y); /** shelfs are generated in reverse so we have to flip values*/
 
 
-        //_coordList = _cart.coordList;
+        //_atWaypoint serves as index pointer for coordList (when eg. moving)
         _atWaypoint = 0;
+        //length of coordList - end at that index
         _WaypointSize = _cart.coordList.size() - 1; // we do this because we skip the first point
 
         _defaultExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -115,11 +123,7 @@ public class ClockController {
         //https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
         // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
 
-        //TODO placeholder, delete
-//        if(_cartId == 0)
-//            MoveTrolley(_cartId, +20, -20);
-//        else
-            PlaceTrolley(_cartId, 5, 315);
+        PlaceTrolley(_cartId, 5, 315);
 
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, (_cartId - 1) *100, _delay, TimeUnit.MILLISECONDS);
@@ -162,9 +166,9 @@ public class ClockController {
 
                             _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
                             _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
-
+                            System.out.println("ClockController @168: the newly updated coords of cart " + _cartId + " are: [" + _cart.coord_x + ", " + _cart.coord_y + "]");
                         } else {
-                            System.out.println(_coordList);
+                            System.out.println("Clockcontroller @170: the coords of cart " + _cartId + " are: [" + _cart.coord_x + ", " + _cart.coord_y  + "]. Got to else-loop in clockcontroller. Coordlist is: " + _coordList);
                             //private
                             _orderIndex += 1;
                             if (_orderIndex < _trolley.allWaypoints.size()) {
