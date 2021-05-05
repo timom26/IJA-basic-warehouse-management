@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="App.MenuController">
    <children>
-      <ChoiceBox layoutX="14.0" layoutY="20.0" prefWidth="150.0" />
-      <TextArea layoutX="199.0" layoutY="20.0" prefHeight="229.0" prefWidth="287.0" wrapText="true" />
-      <Spinner layoutX="15.0" layoutY="224.0" />
+      <ChoiceBox fx:id="_chooseTrolley" layoutX="14.0" layoutY="20.0" prefWidth="150.0" />
+      <TextArea fx:id="_loadedRequests" layoutX="206.0" layoutY="19.0" prefHeight="230.0" prefWidth="280.0" wrapText="true" />
+      <Spinner fx:id="_allGoods" layoutX="15.0" layoutY="224.0" />
       <Label layoutX="15.0" layoutY="200.0" prefHeight="17.0" prefWidth="99.0" text="Goods available" />
+      <Button layoutX="38.0" layoutY="164.0" mnemonicParsing="false" onAction="#LoadRequests" prefHeight="17.0" prefWidth="54.0" text="Submit" />
+      <TextArea editable="false" layoutX="15.0" layoutY="54.0" prefHeight="104.0" prefWidth="158.0" style="-fx-text-box-border: transparent; -fx-background-color: transparent;                   -fx-text-fill: black" text="Issue requests for single trolley, where each request should be put on newline in format:&#10;&lt;Goods&gt; &lt;quantity&gt;" wrapText="true">
+         <font>
+            <Font name="Comic Sans MS" size="12.0" />
+         </font></TextArea>
+      <CheckBox fx:id="_reset" layoutX="114.0" layoutY="168.0" mnemonicParsing="false" selected="true" text="Reset">
+         <tooltip>
+            <Tooltip text="If checked, previously isued orders will be cancelled" wrapText="true" />
+         </tooltip>
+      </CheckBox>
    </children>
 </Pane>
