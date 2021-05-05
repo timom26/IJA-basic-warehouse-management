@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import store.ShoppingCart;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -94,7 +95,12 @@ public class ClockController {
 
         // These will be used later
         _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-        _cart.planRoute(_cart.goal_x, _cart.goal_y); /** shelfs are generated in reverse so we have to flip values*/
+
+        Point from = new Point(_cart.coord_x, _cart.coord_y);
+        Point where = new Point(_cart.goal_x, _cart.goal_y);
+
+        _cart.coordList = _cart.warehouse.getAStarCoords(from,where, "shelf");
+        //_cart.planRoute(_cart.goal_x, _cart.goal_y); /** shelfs are generated in reverse so we have to flip values*/
 
 
         //_coordList = _cart.coordList;
@@ -132,6 +138,7 @@ public class ClockController {
                     if (!_pause && !_defaultExecutor.isTerminated()) {
                         if (_atWaypoint < _WaypointSize) {
                             _atWaypoint += 1;
+                            _cart.coordIndex++;
                             if (_cart.warehouse.closedPaths.contains(_cart.coordList.get(_atWaypoint))) {
                                 //if during walking found the next tile to be blocked,
                                 //recalculate route
@@ -144,10 +151,6 @@ public class ClockController {
                                 _WaypointSize = _cart.coordList.size() - 1;
                                 return;
                             }
-
-                            //first coordinate is the current position of trolley, skip it
-
-                            _cart.coordIndex++;
 
                             //int toGoX, toGoY
 
@@ -166,8 +169,13 @@ public class ClockController {
                             _orderIndex += 1;
                             if (_orderIndex < _trolley.allWaypoints.size()) {
                                 /** TODO naložiť, ak je plný, poslať vyložiť a ptm poslať späť sa pohybovať po sklade */
+
                                 _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
-                                _cart.coordList = _cart.getCoords(_currentShelfToGo.getY(), _currentShelfToGo.getX()); // shelfs are generated in reverse so we have to flip values
+
+                                Point tmp = new Point(_currentShelfToGo.getY(),_currentShelfToGo.getX());
+                                Point tmp2 = new Point(_cart.coord_x, _cart.coord_y);
+                                _cart.coordList = _cart.warehouse.getAStarCoords(tmp2,tmp, "shelf");
+                                        //_cart.planRoute(_currentShelfToGo.getY(), _currentShelfToGo.getX());// shelfs are generated in reverse so we have to flip values
                                 _cart.coordIndex = 0;
                                 _atWaypoint = 0;
                                 _WaypointSize = _cart.coordList.size() - 1;

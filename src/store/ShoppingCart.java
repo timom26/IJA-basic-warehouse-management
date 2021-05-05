@@ -248,7 +248,7 @@ public class ShoppingCart {
         this.coordList = warehouse.getAStarCoords(placePoint,targetPoint,"shelf");
         if (this.coordList.isEmpty()){
             System.out.println(" E M P T Y ");
-            return false;//we can get the Goods from where we stand
+            return false;
         }
         else {
             System.out.println(this.coordList);
