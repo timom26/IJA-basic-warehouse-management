@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class MenuController {
-
+    //variables
     @FXML
     public ChoiceBox _chooseTrolley;
     @FXML
@@ -24,14 +24,16 @@ public class MenuController {
     @FXML
     public Spinner<String> _allGoods;
     public CheckBox _reset;
-
     private ObservableList<String> _namesOfGoods;
+
 
     public MenuController(){
         super();
     }
 
-    /** POGU method // handle data once the fields are injected */
+    /**
+     * @brief POGU method // handle data once the fields are injected
+     */
     public void initialize() {
         //https://stackoverflow.com/a/37447039
         ObservableList<String> options = FXCollections.observableArrayList(
@@ -53,7 +55,10 @@ public class MenuController {
 //        this._namesOfGoods = warehouse.GetGoodsNames();
 //    }
 
-
+    /**
+     * @brief ask reader to load Requests ( + some checks )
+     * @param event
+     */
     public void LoadRequests(ActionEvent event){
         /** char implicitly casts itself to int */
         if(WarehouseController._controlledWarehouse == null)
