@@ -1,5 +1,3 @@
-1 Pohovky 1 , Zidle 1
-2 Zidle 3 , watch 1 , glasses 1
-3 Zidle 10 , sharpie 2 , sponge 1 , sailboat 5 , shampoo 1
-4 Pohovky 4 , car 1 , deodorant 2
-5 flowers 2 , balloon 10
+1 Jablka 10 , Židle 2 , Stoly 6 , Hrnce 10
+2 Stoly 4 , Hrnce 2
+3 RAMky 8 , Sirupy 2 , Hrnce 10

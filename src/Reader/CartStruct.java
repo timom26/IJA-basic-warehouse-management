@@ -1,9 +1,3 @@
-/**
- * @author Timotej Ponek xponek00
- * @author Timotej Kamensky xkamen24
- * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief implementation of a Cart management system
- */
 package Reader;
 
 import store.ShoppingCart;
@@ -112,8 +106,12 @@ public class CartStruct {
                 GoodsName = name;
             }
 
-            public String GetIndexName() {
+            public String getIndexName() {
                 return this.GoodsName;
+            }
+
+            public int getIndexAmount() {
+                return this.amount;
             }
 
             public void AddPoints(int x, int y) {
@@ -123,6 +121,10 @@ public class CartStruct {
 
             public OnePoint GetFirstPoint() {
                 return points.get(0);
+            }
+
+            public OnePoint GetPoint(int index) {
+                return points.size() > index ? points.get(index) : null;
             }
 
             //************************************************************************************//

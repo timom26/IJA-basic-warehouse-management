@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief implementation of a type of goods
+ * @brief assignment of java application for basic warehouse management system
  */
 package store;
 

@@ -1,9 +1,3 @@
-/**
- * @author Timotej Ponek xponek00
- * @author Timotej Kamensky xkamen24
- * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief implements a class A star Node (that is: a single node from A* pathfinding algorithm)
- */
 package Reader;
 
 import java.awt.*;

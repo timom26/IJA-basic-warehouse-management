@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief implementation of a single warehouse
+ * @brief assignment of java application for basic warehouse management system
  */
 package Reader;
 import javafx.util.Pair;
@@ -28,7 +28,7 @@ import static java.lang.Math.sqrt;
 public class WarehouseStruct {
     public List shelves = new ArrayList();
     public List<Goods> goods = new ArrayList();
-    public List<Point> closedPaths = new ArrayList<>();
+    public List<Point> closedPaths = new ArrayList();
     private int rows;
     private int cols;
 
@@ -80,7 +80,7 @@ public class WarehouseStruct {
     }
 
     public int getMax_x() {
-        return this.cols = cols + cols/2 + (cols%2 == 0 ? 1 : 2);
+        return cols + cols/2 + (cols%2 == 0 ? 1 : 2);
     }
 
     public int getMax_y() {
@@ -157,6 +157,7 @@ public class WarehouseStruct {
             System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
             throw new InvalidParameterException("unknown parameter in function getAStarCoords");
         }
+        //System.out.println(" " + startPoint + endPoint);
         List<AStarNode> alreadyExpanded = new ArrayList<>();
         List<AStarNode> queue = new ArrayList<>();
         List<Point> coordsList = new ArrayList<>();//results
@@ -164,10 +165,10 @@ public class WarehouseStruct {
         queue.add(startNode);
         System.out.println("AStarnode is looking for way to: " + endPoint);
         while(true){
-            /*System.out.print("the queue is: ");
+            System.out.print("the queue is: ");
             for (AStarNode n : queue) {
                 System.out.print("  " + n.getPoint());
-            }System.out.println();*/
+            }System.out.println();
 
             if (queue.isEmpty()){
                 return coordsList;//empty one, did not find the way
@@ -197,11 +198,6 @@ public class WarehouseStruct {
                         //System.out.println("returning ");
                         Collections.reverse(coordsList);//so it goes from cart to target
                         coordsList.add(endPoint);
-                        System.out.print("AStar found a following way: ");
-                        for (Point p : coordsList) {
-                            System.out.print(" [" + p.x +"," + p.y + "] ");
-                        }
-                        System.out.println();
                         return  coordsList;
                     }
                 }
@@ -341,7 +337,7 @@ public class WarehouseStruct {
                 p3.y = point.y - 1;
                 p3_set = true;
             }
-            p4_set = true;//always down to garages
+            p4_set = true;//always down
             p4.x = point.x;
             p4.y = point.y +1;
         }
@@ -373,7 +369,7 @@ public class WarehouseStruct {
                 returnList.add(p4);
             }
         }
-        //System.out.println("  neighbours of " + point + " are " + returnList);
+        System.out.println("  neighbours of " + point + " are " + returnList);
         return returnList;
     }
 

@@ -2,7 +2,7 @@
  * @author Timotej Ponek
  * @author Timotej Kamensky
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief implementation of a single shopping cart
+ * @brief assignment of java application for basic warehouse management system
  */
 package store;
 
@@ -59,6 +59,24 @@ public class ShoppingCart {
     }
 
     /**
+     * @brief Fills the cart by any item of a given goods-type from a given shelf
+     * @param shelf shelf to take item from
+     * @param goodsName goodstype to take
+     * @return true if successful, false if full cart or no item of type in shelf
+     */
+    public int FillAmount(Shelf shelf, String goodsName, int amount){
+        Goods tmp = new Goods(goodsName);
+        for (int taken = 0; taken < amount; taken++){
+            Item takenItem = shelf.removeAny(tmp);
+            if (takenItem == null || this.size() >= maximumCount){
+                return amount - taken;
+            }
+            content.add(takenItem);
+        }
+        return 0;
+    }
+
+    /**
      * @brief Takes out item of a given type to the given shelf
      * @param shelf shelf to pace item onto
      * @param goods goodstype of item to be placed
@@ -85,6 +103,15 @@ public class ShoppingCart {
             shelf.put(item);
         }
     }
+
+    /**
+     * Beware, Unloading
+     */
+    public void Unload(){
+        content = new ArrayList<>();
+    }
+
+
     /**
      * @brief Checks if the cart contains any item with given goodstype
      * @param goods goodstype to match
@@ -103,6 +130,21 @@ public class ShoppingCart {
     }
 
 
+     /** Check wheter cart is full
+     * @return boolean
+     */
+    public boolean isFull(){
+        return content.size() == maximumCount;
+    }
+
+    /** Check wheter cart is empty
+     * @return boolean
+     */
+    public boolean isEmpty(){
+        return content.size() == 0;
+    }
+
+
 
     /**
      * @brief returns list of goods carried in cart
@@ -113,7 +155,7 @@ public class ShoppingCart {
             return "Empty";
         StringBuilder All = new StringBuilder();
         for (Item item:content) {
-            All.append(item.getName()).append(", ").append('\n');
+            All.append(item.getName()).append('\n');
         }
 
         return All.toString();
@@ -128,6 +170,7 @@ public class ShoppingCart {
      * @return Route to target shelf - List of 2d points
      */
     public List<java.awt.Point> getCoords(int end_x, int end_y){
+
         int start_x = this.coord_x;
         int start_y = this.coord_y;
         int warehouse_x = this.warehouse.getCols();

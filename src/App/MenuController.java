@@ -1,9 +1,3 @@
-/**
- * @author Timotej Ponek xponek00
- * @author Timotej Kamensky xkamen24
- * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief Menu controller
- */
 package App;
 import Reader.Read;
 import Reader.WarehouseStruct;
@@ -22,7 +16,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class MenuController {
-    //variables
+
     @FXML
     public ChoiceBox _chooseTrolley;
     @FXML
@@ -30,22 +24,21 @@ public class MenuController {
     @FXML
     public Spinner<String> _allGoods;
     public CheckBox _reset;
-    private ObservableList<String> _namesOfGoods;
 
+    private ObservableList<String> _namesOfGoods;
 
     public MenuController(){
         super();
     }
 
-    /**
-     * @brief POGU method // handle data once the fields are injected
-     */
+    /** POGU method // handle data once the fields are injected */
     public void initialize() {
         //https://stackoverflow.com/a/37447039
         ObservableList<String> options = FXCollections.observableArrayList(
                 "Trolley 1", "Trolley 2", "Trolley 3", "Trolley 4", "Trolley 5");
         _chooseTrolley.setValue("Trolley 1");
         _chooseTrolley.setItems(options);
+        //_reset.setTooltip(new Tooltip("If checked, previously isued orders will be cancelled"));
 
         if(WarehouseController._controlledWarehouse != null){
             this._namesOfGoods = FXCollections.observableArrayList(WarehouseController._controlledWarehouse.GetGoodsNames());
@@ -61,10 +54,7 @@ public class MenuController {
 //        this._namesOfGoods = warehouse.GetGoodsNames();
 //    }
 
-    /**
-     * @brief ask reader to load Requests ( + some checks )
-     * @param event
-     */
+
     public void LoadRequests(ActionEvent event){
         /** char implicitly casts itself to int */
         if(WarehouseController._controlledWarehouse == null)

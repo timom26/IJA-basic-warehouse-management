@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief GUI buttons and their action implementation, speed changes
+ * @brief assignment of java application for basic warehouse management system
  */
 
 package App;
@@ -37,10 +37,14 @@ public class Controller {
     private List<ClockController> _inMotion;
     private boolean paused = false;
 
-
     /**
-     * @brief implements the left button "launch"
+     * serves as de-facto main in GUI.
+     *
+     * Asks for warehouse and its files (read from txt files)
+     * After that it generates a graphical interface to see current status
+     * of warehouse.
      */
+
     public void buttonLaunch() {
         // clear possible ongoing simulation
         ClockController.DispatchAll();
@@ -64,11 +68,9 @@ public class Controller {
 
             }
         }
+
     }
 
-    /**
-     * @brief implements the right button "Simulate"
-     */
     public void buttonSimulate() {
         if(_inMotion != null){
             //return, you have to click load first
@@ -82,6 +84,7 @@ public class Controller {
             ClockController tmp = new ClockController(trolley, _workplace, id++);
             _inMotion.add(tmp);
         }
+        WarehouseController.AddTrolleyToolTip();
 
     }
 
@@ -89,13 +92,6 @@ public class Controller {
         return _workplace.GetGoodsNames();
     }
 
-    /**
-     * @brief serves as de-facto main in GUI.
-     *
-     * Asks for warehouse and its files (read from txt files)
-     * After that it generates a graphical interface to see current status
-     * of warehouse.
-     */
     public void launchMenu() throws IOException {
         if(!ClockController.get_pause())
             ClockController.Pause();
@@ -113,43 +109,29 @@ public class Controller {
             //((MenuController) fxmlLoader.getController()).SetGoods(_workplace);
     }
 
-    /**
-     * @brief implements the button "pause"
-     */
     public void ButtonPause(){
         ClockController.Pause();
     }
+
     /**
      * Speed change functions
      */
 
-    /**
-     * @brief change the time of single tick to 1000ms
-     */
     public void Speed1x(){
-        ClockController.SetTime(1000); //1000ms = 1 second per single tick
+        ClockController.SetTime(1000);
         ClockController.UpdateTimer(_inMotion);
     }
 
-    /**
-     * @brief change the time of single tick to 500ms
-     */
     public void Speed2x(){
         ClockController.SetTime(500);
         ClockController.UpdateTimer(_inMotion);
     }
 
-    /**
-     * @brief change the time of single tick to 250ms
-     */
     public void Speed4x(){
         ClockController.SetTime(250);
         ClockController.UpdateTimer(_inMotion);
     }
 
-    /**
-     * @brief change the time of single tick to 125ms
-     */
     public void Speed8x(){
         ClockController.SetTime(125);
         ClockController.UpdateTimer(_inMotion);

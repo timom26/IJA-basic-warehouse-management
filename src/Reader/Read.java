@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief implementation of functions reading input files from ~/data
+ * @brief assignment of java application for basic warehouse management system
  */
 package Reader;
 

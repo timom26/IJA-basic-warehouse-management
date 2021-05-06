@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief main
+ * @brief assignment of java application for basic warehouse management system
  */
 
 package App;
@@ -30,7 +30,9 @@ public class Main extends Application {
         fxmlLoader.setController(new Controller());
         Parent root = fxmlLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
         primaryStage.setTitle("Warehouse");
-        primaryStage.setScene(new Scene(root, 640, 545));
+        primaryStage.setScene(new Scene(root, 640, 540));
+        primaryStage.setMinWidth(640);
+        primaryStage.setMinHeight(540);
         primaryStage.show();
 
         //init warehouse
