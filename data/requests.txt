@@ -1,4 +1,5 @@
-1 Jablka 10 , Zidle 2
-2 Zidle 3
-3 Jablka 10
-4 Pohovky 4
+1 Pohovky 1 , Zidle 1
+2 Zidle 3 , watch 1 , glasses 1
+3 Zidle 10 , sharpie 2 , sponge 1 , sailboat 5 , shampoo 1
+4 Pohovky 4 , car 1 , deodorant 2
+5 flowers 2 , balloon 10
