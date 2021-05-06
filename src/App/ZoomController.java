@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief assignment of java application for basic warehouse management system
+ * @brief implementation of GUI serving a purpose of zooming on a warehouse
  */
 package App;
 
