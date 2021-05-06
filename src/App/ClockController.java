@@ -1,10 +1,8 @@
 package App;
 
 import Reader.CartStruct;
-import Reader.AStarNode;
 import Reader.WarehouseStruct;
 import javafx.application.Platform;
-import javafx.event.Event;
 import store.ShoppingCart;
 
 import java.awt.*;
@@ -94,7 +92,7 @@ public class ClockController {
         _orderIndex = 0;
 
         //This will be moved to Controller class in production
-        WarehouseController.BoundCartToTrolley(id, _cart);
+        WarehouseController.BindCartToTrolley(id, _cart);
         WarehouseController.AddTrolleyToolTip();
 
         Boolean inMotion = false;
@@ -132,6 +130,14 @@ public class ClockController {
 
     }
 
+    /**
+     * @brief function defines, what should each trolley tell the cart to do.
+     *
+     * Generally:
+     *
+     * For each goal: go to target, pickup, go to next target etc., and get back at the end.
+     * If got full while doing so, go empty yourself.
+     */
     private void TrolleyRoutine(){
         /** JavaFX things cannot be updated outside JavaFX thread */
         try {
@@ -139,38 +145,42 @@ public class ClockController {
 
                 @Override
                 public void run() {
+                    //if running running
                     if (!_pause && !_defaultExecutor.isTerminated()) {
+                        //get next tile to go
                         if (_atWaypoint < _WaypointSize) {
                             _atWaypoint += 1;
                             _cart.coordIndex++;
+                            //if the next tile got blocked in the meantime, recalculate the route
                             if (_cart.warehouse.closedPaths.contains(_cart.coordList.get(_atWaypoint))) {
-                                //if during walking found the next tile to be blocked,
-                                //recalculate route
                                 _cart.coordList.clear();
                                 _cart.coordIndex = 0;
                                 _cart.planRoute(_cart.goal_x, _cart.goal_y);
 
-                                //reset these
+                                //reset parameters (we get a new route from recalculation,
+                                // so it is basically a totally new route and we have to reset these indexes)
                                 _atWaypoint = 0;
                                 _WaypointSize = _cart.coordList.size() - 1;
                                 return;
                             }
 
-                            //int toGoX, toGoY
-
+                            //get the next tile to go to
                             int toGoX = _cart.coordList.get(_atWaypoint).x;
                             int toGoY = _cart.coordList.get(_atWaypoint).y;
 
                             //convenient method
+                            //Note: this call will move it only by a single tile!
                             MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
 
+                            //save, where did you just move
                             _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
                             _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
-                            System.out.println("ClockController @168: the newly updated coords of cart " + _cartId + " are: [" + _cart.coord_x + ", " + _cart.coord_y + "]");
+
+                            //System.out.println("ClockController @168: the newly updated coords of cart " + _cartId + " are: [" + _cart.coord_x + ", " + _cart.coord_y + "]");
                         } else {
-                            System.out.println("Clockcontroller @170: the coords of cart " + _cartId + " are: [" + _cart.coord_x + ", " + _cart.coord_y  + "]. Got to else-loop in clockcontroller. Coordlist is: " + _coordList);
-                            //private
+                            //System.out.println("Clockcontroller @170: the coords of cart " + _cartId + " are: [" + _cart.coord_x + ", " + _cart.coord_y  + "]. Got to else-loop in clockcontroller. Coordlist is: " + _coordList);
                             _orderIndex += 1;
+                            //if there is another target to go to:
                             if (_orderIndex < _trolley.allWaypoints.size()) {
                                 /** TODO naložiť, ak je plný, poslať vyložiť a ptm poslať späť sa pohybovať po sklade */
 
