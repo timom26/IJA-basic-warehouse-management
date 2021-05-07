@@ -1,3 +1,5 @@
-1 Jablka 10 , Židle 2 , Stoly 6 , Hrnce 10
-2 Stoly 4 , Hrnce 2
-3 RAMky 8 , Sirupy 2 , Hrnce 10
+1 apple 10 , chair 2 , table 6 , pot 10
+2 table 4 , pot 2
+3 RAM 8 , sirrup 2 , pot 10
+4 slip-ons 17 , toys 2 , pot 1
+5 sailboat 1 , sponge 1 , flowers 1
