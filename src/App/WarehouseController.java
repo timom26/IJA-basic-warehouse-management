@@ -339,8 +339,6 @@ public class WarehouseController {
             trolley.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>(){
                 @Override
                 public void handle(MouseEvent event) {
-                    System.out.println("We here");
-
                     //if the cart controller controls no trolley, do nothing
                     if(trolley.boundedCart == null)
                         return;

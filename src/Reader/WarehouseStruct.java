@@ -130,8 +130,6 @@ public class WarehouseStruct {
 
 
     public List<Point> getAStarCoords(Point startPoint, Point endPoint, String operation){ ;
-        System.out.println("\n\nStarting getastar with parameters" + startPoint + endPoint+operation);
-
         //it is a point of a shelf,
         // and i want to change it
         // to a corresponding tile in front of that given shelf
@@ -143,28 +141,19 @@ public class WarehouseStruct {
                 endPoint.x = endPoint.x * 2;
             }
             else{
-                System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
                 throw new InvalidParameterException("this should not happen. probably, point of a shelf was given instead of tile");
             }
         }
         else if (operation == "tile"){}
         else{
-            System.out.println("  e  r  r  o  r     t  h  r  o  w  i  n  g  ");
             throw new InvalidParameterException("unknown parameter in function getAStarCoords");
         }
-        //System.out.println(" " + startPoint + endPoint);
         List<AStarNode> alreadyExpanded = new ArrayList<>();
         List<AStarNode> queue = new ArrayList<>();
         List<Point> coordsList = new ArrayList<>();//results
         AStarNode startNode = new AStarNode(startPoint,0.0,getFastDistance(startPoint,endPoint),null);
         queue.add(startNode);
-        System.out.println("AStarnode is looking for way to: " + endPoint);
         while(true){
-            System.out.print("the queue is: ");
-            for (AStarNode n : queue) {
-                System.out.print("  " + n.getPoint());
-            }System.out.println();
-
             if (queue.isEmpty()){
                 return coordsList;//empty one, did not find the way
             }
@@ -173,10 +162,8 @@ public class WarehouseStruct {
             queue.remove(0);
             alreadyExpanded.add(currentNode);
             //   i f   f i n a l ,   g e t   r o u t e   a n d   r e t u r n
-            //System.out.println("comparing: " + currentNode.getPoint() + " with endpoint " + endPoint);
+
             if (currentNode.getPoint().x == endPoint.x && currentNode.getPoint().y == endPoint.y ){
-                //System.out.println("  f  o  u  n  d     e  n  d  p  o  i  n  t  ,     g   e  t  t  i  n  g  a  p  a  t  h  b  a  c  k    ");
-                //System.out.println("found point " + currentNode.getPoint() + " on cycle " + count);
                 AStarNode lastNode = currentNode;
                 int count2 = 0;
                 while(true){
@@ -190,7 +177,6 @@ public class WarehouseStruct {
                     }
 
                     if (lastNode.getPoint().equals(startPoint)){
-                        //System.out.println("returning ");
                         Collections.reverse(coordsList);//so it goes from cart to target
                         coordsList.add(endPoint);
                         return  coordsList;
@@ -199,16 +185,12 @@ public class WarehouseStruct {
             }
             //e x p a n d i n g   a   p o i n t
             List<Point> bufferList= getAStarNeighbors(currentNode.getPoint());
-            //System.out.println("neighbours are: " + bufferList);
             //add the points into a queue, ignore already expanded, update existing
             boolean expanded = false;
             boolean updated = false;
             for (Point p:bufferList) {
-                //System.out.println("processing a point" + p);
                 for (AStarNode already : alreadyExpanded) {//if already expanded, skip
-                    //System.out.println("comparing " + p + " with " + already.getPoint());
                     if (p.equals(already.getPoint())) {
-                        //System.out.println("point was already expanded, ignore");
                         expanded = true;
                     }
                 }
@@ -298,7 +280,6 @@ public class WarehouseStruct {
 
         if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)    && point.x >= 0  && point.x <= this.getMax_x()){
             //in a horizontal walkway, and can add a neighbour to the left
-            //System.out.print("  horisontal to left  ");
 
             p1.x = point.x - 1;
             p1.y = point.y;
@@ -306,14 +287,12 @@ public class WarehouseStruct {
         }
         if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)  && point.x >= -1   && point.x != this.getMax_x()){
             //in a horizontal walkway, and can add a neighbour to the right
-            //System.out.print("  horisontal to right  ");
 
             p2.x = point.x + 1;
             p2.y = point.y;
             p2_set = true;
         }
-        if (point.y == -1){
-            //System.out.print(" upper row ");
+        if (point.y == -1){//upper row
             if (point.x % 4 == 2 || point.x % 4 ==3 || point.x == -1){
                 //if in upper horizontal row
                 p3.x = point.x;
@@ -323,8 +302,7 @@ public class WarehouseStruct {
 
 
         }
-        if (point.y == getRows()){
-            //System.out.print(" lower row ");
+        if (point.y == getRows()){//lower row
             if (point.x % 4 == 2 || point.x % 4 ==3 || point.x == -1) {
                 //System.out.print(" and printed ");
                 //if in lower horizontal row
@@ -364,7 +342,6 @@ public class WarehouseStruct {
                 returnList.add(p4);
             }
         }
-        System.out.println("  neighbours of " + point + " are " + returnList);
         return returnList;
     }
 
