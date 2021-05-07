@@ -48,6 +48,10 @@ public class ClockController {
         _delay = delay;
     }
 
+    /**
+     * Updates repeat period for ClockControllers
+     * @param toUpdate All currently created ClockControllers
+     */
     public static void UpdateTimer(List<ClockController> toUpdate){
         if (toUpdate == null)   return;
 
@@ -57,16 +61,21 @@ public class ClockController {
         }
     }
 
-
+    /**
+     * Based on the answer from https://stackoverflow.com/a/52745658
+     * @brief Changes time period in which are trolleys moved
+     */
     public void changeTime(){
         if(this.futureTask != null){
             futureTask.cancel(true);
         }
-
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, 0, _delay, TimeUnit.MILLISECONDS);
     }
 
 
+    /**
+     * @brief Stops all moving carts on reload
+     */
     public static void DispatchAll(){
         if(_allExecutors != null){
             for (ScheduledExecutorService toDestroy: _allExecutors) {
@@ -80,6 +89,12 @@ public class ClockController {
         _pause = !_pause;
     }
 
+    /**
+     * @brief main function for guidance and control of a cart. these assistive functions are centered in struct trolley
+     * @param trolley
+     * @param workplace
+     * @param id
+     */
     public ClockController(CartStruct.Trolley trolley, WarehouseStruct workplace, int id){
         _isUnloading = true;
         _goEmpty = false;
@@ -94,10 +109,8 @@ public class ClockController {
         _cartId = id;
         _orderIndex = 0;
 
-        //This will be moved to Controller class in production
         WarehouseController.BindCartToTrolley(id, _cart);
 
-        Boolean inMotion = false;
         _currentShelfToGo = trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
 
         // These will be used later
@@ -107,32 +120,16 @@ public class ClockController {
         Point where = new Point(_cart.goal_x, _cart.goal_y);
 
         _cart.coordList = _cart.warehouse.getAStarCoords(from,where, "shelf");
-        //_cart.planRoute(_cart.goal_x, _cart.goal_y); /** shelfs are generated in reverse so we have to flip values*/
 
-
-        //_coordList = _cart.coordList;
         _atWaypoint = 0;
         _WaypointSize = _cart.coordList.size() - 1; // we do this because we skip the first point
 
         _defaultExecutor = Executors.newSingleThreadScheduledExecutor();
 
-
-        //helpers
-        //https://stackoverflow.com/questions/28620806/how-do-i-change-the-rate-or-period-of-a-repeating-task-using-scheduledexecutorse
-        //https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
-        // And the bellow code is based on https://stackoverflow.com/a/52745658 (best answer)
-
-        //TODO placeholder, delete
-//        if(_cartId == 0)
-//            MoveTrolley(_cartId, +20, -20);
-//        else
-            TrolleyController.PlaceTrolley(_cartId, 5, 315);
-
+        TrolleyController.PlaceTrolley(_cartId, 5, 315);
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, (_cartId - 1) *100, _delay, TimeUnit.MILLISECONDS);
-
         _allExecutors.add(_defaultExecutor);
-
     }
 
     /**
@@ -144,174 +141,169 @@ public class ClockController {
      * If got full while doing so, go empty yourself.
      */
     private void TrolleyRoutine(){
-        /** JavaFX things cannot be updated outside JavaFX thread */
-                    if (!_pause && !_defaultExecutor.isTerminated()) {
-                        if (_atWaypoint < _WaypointSize) {
-                            _atWaypoint += 1;
-                            _cart.coordIndex++;
-                            if (_cart.warehouse.closedPaths.contains(_cart.coordList.get(_atWaypoint))) {
-                                //if during walking found the next tile to be blocked,
-                                //recalculate route
-                                _cart.coordList.clear();
-                                _cart.coordIndex = 0;
-                                _cart.planRoute(_cart.goal_x, _cart.goal_y);
+        if (!_pause && !_defaultExecutor.isTerminated()) {
+            if (_atWaypoint < _WaypointSize) {
+                _atWaypoint += 1;
+                _cart.coordIndex++;
+                if (_cart.warehouse.closedPaths.contains(_cart.coordList.get(_atWaypoint))) {
+                    //if during walking found the next tile to be blocked,
+                    //recalculate route
+                    _cart.coordList.clear();
+                    _cart.coordIndex = 0;
+                    _cart.planRoute(_cart.goal_x, _cart.goal_y);
 
-                                //reset parameters (we get a new route from recalculation,
-                                // so it is basically a totally new route and we have to reset these indexes)
-                                _atWaypoint = 0;
-                                _WaypointSize = _cart.coordList.size() - 1;
+                    // reset parameters (we get a new route from recalculation,
+                    // so it is basically a totally new route and we have to reset these indexes)
+                    _atWaypoint = 0;
+                    _WaypointSize = _cart.coordList.size() - 1;
 
-                                //if we are blocked, we set these so sheduledController won't shut itself
-                                if(_cart.coordList.size() == 0)
-                                    _blocked = true;
-                                else
-                                    _blocked = false;
+                    //if we are blocked, we set these so sheduledController won't shut itself
+                    if(_cart.coordList.size() == 0)
+                        _blocked = true;
+                    else
+                        _blocked = false;
 
-                                return;
-                            }
+                    return;
+                }
 
-                            //get the next tile to go to
-                            int toGoX = _cart.coordList.get(_atWaypoint).x;
-                            int toGoY = _cart.coordList.get(_atWaypoint).y;
+                //get the next tile to go to
+                int toGoX = _cart.coordList.get(_atWaypoint).x;
+                int toGoY = _cart.coordList.get(_atWaypoint).y;
 
-                            //convenient method
-                            //Note: this call will move it only by a single tile!
-                            TrolleyController.MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+                //convenient method
+                //Note: this call will move it only by a single tile!
+                TrolleyController.MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
 
-                            //save, where did you just move
-                            _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
-                            _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
+                //save, where did you just move
+                _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
+                _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
 
-                            _isUnloading = true;
-                        }
-                        /** we are blocked everywhere, keep looking for new routes*/
-                        else if(_blocked){
-                            _cart.coordList.clear();
-                            _cart.coordIndex = 0;
-                            _cart.planRoute(_cart.goal_x, _cart.goal_y);
+                _isUnloading = true;
+            }
+            /** we are blocked everywhere, keep looking for new routes*/
+            else if(_blocked){
+                _cart.coordList.clear();
+                _cart.coordIndex = 0;
+                _cart.planRoute(_cart.goal_x, _cart.goal_y);
 
-                            if(_cart.coordList.size() > 0)
-                                _blocked = false;
-                            //reset these
-                            _atWaypoint = 0;
-                            _WaypointSize = _cart.coordList.size() - 1;
+                if(_cart.coordList.size() > 0)
+                    _blocked = false;
+                //reset these
+                _atWaypoint = 0;
+                _WaypointSize = _cart.coordList.size() - 1;
+                return;
+            }
+
+            else {
+                Point where, from;
+                if (_isUnloading && !_goEmpty){
+
+                    try{
+                        _remainingToGet = _cart.FillAmount(
+                                ((Shelf) ((ArrayList) _cart.warehouse.shelves.get(_cart.goal_y)).get(_cart.goal_x)),
+                                _trolley.allWaypoints.get(_orderIndex).getIndexName(),
+                                _remainingToGet
+                        );
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    WarehouseController.ActualizeTooltip(_cart.goal_y, _cart.goal_x);
+                    WarehouseController.ActualizeTrolleyToolTip(_cartId);
+
+                    if(_remainingToGet == 0 && !_cart.isFull()){
+                        /** we can continue to go for new goods */
+                        _isUnloading = false;
+                    }
+                    else if(_remainingToGet > 0 && !_cart.isFull()){
+                        _tryNext++;
+                        _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetPoint(_tryNext);
+
+
+                        /**skip order*/
+                        if(_currentShelfToGo == null) {
+                            _isUnloading = false;
                             return;
                         }
+                        _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
 
-                        else {
-                            Point where, from;
-                            //private
-                            if (_isUnloading && !_goEmpty){
+                        where = new Point(_currentShelfToGo.getY(),_currentShelfToGo.getX());
+                        from = new Point(_cart.coord_x, _cart.coord_y);
+                        _cart.coordList = _cart.warehouse.getAStarCoords(from, where, "shelf");
 
-                                try{
-                                    _remainingToGet = _cart.FillAmount(
-                                            ((Shelf) ((ArrayList) _cart.warehouse.shelves.get(_cart.goal_y)).get(_cart.goal_x)),
-                                            _trolley.allWaypoints.get(_orderIndex).getIndexName(),
-                                            _remainingToGet
-                                    );
-                                }
-                                catch (Exception e){
-                                    e.printStackTrace();
-                                    return;
-                                }
+                        _cart.coordIndex = 0;
+                        _atWaypoint = 0;
+                        _WaypointSize = _cart.coordList.size() - 1;
 
-                                WarehouseController.ActualizeTooltip(_cart.goal_y, _cart.goal_x);
-                                WarehouseController.ActualizeTrolleyToolTip(_cartId);
+                        TrolleyController.ActualizeRoute(_cartId);
+                        return;
+                    }
+                    else{
+                        GoEmptyCart();
+                    }
+                    return;
+                }
+                else if(_goEmpty){
+                    _cart.Unload();
+                    _goEmpty = false;
+                    WarehouseController.ActualizeTrolleyToolTip(_cartId);
+                    /** Get back to shelf*/
+                    if(_remainingToGet != 0){
+                        _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetPoint(_tryNext);
+                        _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
 
-                                if(_remainingToGet == 0 && !_cart.isFull()){
-                                    /** we can continue to go for new goods */
-                                    _isUnloading = false;
-                                }
-                                else if(_remainingToGet > 0 && !_cart.isFull()){
-                                    _tryNext++;
-                                    _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetPoint(_tryNext);
+                        Point tmp = new Point(_currentShelfToGo.getY(),_currentShelfToGo.getX());
+                        Point tmp2 = new Point(_cart.coord_x, _cart.coord_y);
+                        _cart.coordList = _cart.warehouse.getAStarCoords(tmp2,tmp, "shelf");
 
+                        _cart.coordIndex = 0;
+                        _atWaypoint = 0;
+                        _WaypointSize = _cart.coordList.size() - 1;
 
-                                    /**skip order*/
-                                    if(_currentShelfToGo == null) {
-                                        _isUnloading = false;
-                                        return;
-                                    }
-                                    _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-
-                                    where = new Point(_currentShelfToGo.getY(),_currentShelfToGo.getX());
-                                    from = new Point(_cart.coord_x, _cart.coord_y);
-                                    _cart.coordList = _cart.warehouse.getAStarCoords(from, where, "shelf");
-
-                                    _cart.coordIndex = 0;
-                                    _atWaypoint = 0;
-                                    _WaypointSize = _cart.coordList.size() - 1;
-
-                                    TrolleyController.ActualizeRoute(_cartId);
-                                    return;
-                                }
-                                else{
-                                    GoEmptyCart();
-                                }
-                                return;
-                            }
-                            else if(_goEmpty){
-                                _cart.Unload();
-                                _goEmpty = false;
-                                WarehouseController.ActualizeTrolleyToolTip(_cartId);
-                                /** Get back to shelf*/
-                                if(_remainingToGet != 0){
-                                    _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetPoint(_tryNext);
-                                    _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-
-                                    Point tmp = new Point(_currentShelfToGo.getY(),_currentShelfToGo.getX());
-                                    Point tmp2 = new Point(_cart.coord_x, _cart.coord_y);
-                                    _cart.coordList = _cart.warehouse.getAStarCoords(tmp2,tmp, "shelf");
-
-                                    _cart.coordIndex = 0;
-                                    _atWaypoint = 0;
-                                    _WaypointSize = _cart.coordList.size() - 1;
-
-                                    TrolleyController.ActualizeRoute(_cartId);
-                                    return;
-                                }
-                            }
-
-                            _orderIndex += 1;
-                            //if there is another target to go to:
-                            if (_orderIndex < _trolley.allWaypoints.size()) {
-
-                                _tryNext = 0; //reset index search
-                                _remainingToGet = _trolley.allWaypoints.get(_orderIndex).getIndexAmount(); //new amount to get
-                                _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
-                                _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-
-                                from = new Point(_cart.coord_x, _cart.coord_y);
-                                where = new Point(_cart.goal_x, _cart.goal_y);
-                                _cart.coordList = _cart.warehouse.getAStarCoords(from, where, "shelf");
-
-                                _cart.coordIndex = 0;
-                                _atWaypoint = 0;
-                                _WaypointSize = _cart.coordList.size() - 1;
-
-                                TrolleyController.ActualizeRoute(_cartId);
-                            }
-                            else if(!_cart.isEmpty()){
-                                GoEmptyCart();
-                            }
-                            else {
-//                            if(futureTask != null){
-//                                futureTask.cancel(true);
-//                            }
-                                if(!_parked){
-                                    goPark();
-                                    _parked = true;
-                                    return;
-                                }
-                                _defaultExecutor.shutdownNow();
-                                //_executor.isTerminated()
-                                ;//exit procedure
-                            }
-                        }
+                        TrolleyController.ActualizeRoute(_cartId);
+                        return;
                     }
                 }
 
+                _orderIndex += 1;
+                //if there is another target to go to:
+                if (_orderIndex < _trolley.allWaypoints.size()) {
 
+                    _tryNext = 0; //reset index search
+                    _remainingToGet = _trolley.allWaypoints.get(_orderIndex).getIndexAmount(); //new amount to get
+                    _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
+                    _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
+
+                    from = new Point(_cart.coord_x, _cart.coord_y);
+                    where = new Point(_cart.goal_x, _cart.goal_y);
+                    _cart.coordList = _cart.warehouse.getAStarCoords(from, where, "shelf");
+
+                    _cart.coordIndex = 0;
+                    _atWaypoint = 0;
+                    _WaypointSize = _cart.coordList.size() - 1;
+
+                    TrolleyController.ActualizeRoute(_cartId);
+                }
+                else if(!_cart.isEmpty()){
+                    GoEmptyCart();
+                }
+                else {
+                    if(!_parked){
+                        goPark();
+                        _parked = true;
+                        return;
+                    }
+                    _defaultExecutor.shutdownNow();
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets parking area as a new target for trolley
+     */
     private void goPark() {
         Point where;
         Point from;
@@ -328,12 +320,15 @@ public class ClockController {
         TrolleyController.ActualizeRoute(_cartId);
     }
 
+    /**
+     * Sets resupply area as a new target for trolley
+     */
     private void GoEmptyCart() {
         Point where;
         Point from;
         _goEmpty = true;
 
-        where = new Point(_workplace.getMax_x() - 46,_workplace.getMax_y() - 1);
+        where = new Point(_workplace.getMax_x(),_workplace.getMax_y() - 1);
         from = new Point(_cart.coord_x, _cart.coord_y);
         _cart.coordList = _cart.warehouse.getAStarCoords(from,where, "tile");
 

@@ -26,21 +26,6 @@ public class Main extends Application {
         primaryStage.setMinWidth(640);
         primaryStage.setMinHeight(540);
         primaryStage.show();
-
-        //init warehouse
-//        WarehouseStruct warehouse1 = new WarehouseStruct();
-//        Read.ReadWarehousePlan(warehouse1.shelves);
-//        warehouse1.setRows(warehouse1.shelves.size());
-//        warehouse1.setCols(((ArrayList) warehouse1.shelves.get(0)).size());
-
-
-//        ShoppingCart cart1 = new ShoppingCart(warehouse1,0,0);
-//        warehouse1.addBlockage(0,1);
-//        System.out.println("###");
-//        cart1.goTo(0,9);
-//        System.out.println("###");
-//        cart1.goTo(0,0);
-//        System.out.println("###");
     }
 
 

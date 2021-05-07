@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Basic GUI controller.
@@ -31,7 +30,6 @@ public class Controller {
     /**
      * GUI panel
      */
-    //public ZoomablePane _zoomPane;
     public ScrollPane _scrollPane;
     public Pane warehousePane;
     public TextField _state;
@@ -43,7 +41,7 @@ public class Controller {
      * @brief implements the left button "launch"
      */
     public void buttonLaunch() {
-        // clear possible ongoing simulation
+        //clear possible ongoing simulation
         ClockController.DispatchAll();
         _inMotion = null;
 
@@ -62,7 +60,6 @@ public class Controller {
 
                 ZoomController.SetProperties(_scrollPane);
                 Read.ReadRequests(depot.shelves, depot.goods, null, depot.getRows(), depot.getCols());
-
             }
         }
 
@@ -75,9 +72,7 @@ public class Controller {
         //we could click pause before Simulate
         _state.textProperty().set(ClockController.get_pause() ? "Paused" : "Playing");
         if(_inMotion != null){
-            //return, you have to click load first
-            return;
-            //ClockController.DispatchAll();
+            return;//you have to click load first
         }
         _inMotion = new ArrayList<ClockController>();
 
@@ -100,14 +95,12 @@ public class Controller {
         menu.initModality(Modality.APPLICATION_MODAL);
         FXMLLoader fxmlLoader = new FXMLLoader();
 
-        //TODO menu Controller
-        //fxmlLoader.setController(new Controller());
         Parent root = fxmlLoader.load(getClass().getClassLoader().getResource("menu.fxml"));
         menu.setTitle("Menu");
         menu.setScene(new Scene(root, 500, 270));
+        menu.setMinWidth(500);
+        menu.setMinHeight(270);
         menu.show();
-        //if(_workplace != null)
-            //((MenuController) fxmlLoader.getController()).SetGoods(_workplace);
     }
 
     /**
@@ -158,13 +151,6 @@ public class Controller {
     public void Speed16x(){
         ClockController.SetTime(63);
         ClockController.UpdateTimer(_inMotion);
-    }
-
-    /**
-     * WIP - ignore for now
-     */
-    public void onMouseEntered(){
-
     }
 
 }

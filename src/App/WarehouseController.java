@@ -17,8 +17,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class WarehouseController {
 
     protected static List<TrolleyGrid> Trolleys;
     private static Rectangle _parkingArea;
-    private static Rectangle _resuplyArea;
+    private static Rectangle _resupplyArea;
 
     private static double rectHeight;
     private static double rectWidth;
@@ -91,7 +91,7 @@ public class WarehouseController {
     public static void PaneDraw(int rows, int cols, Pane warehousePane){
         _warehousePane = warehousePane;
 
-        CreateResuplyParkingArea(warehousePane);
+        CreateResupplyParkingArea(warehousePane);
         CreateTrolleys(warehousePane, 5);
 
         //if any rectangles present, delete them, and set the list of them to be empty
@@ -125,7 +125,6 @@ public class WarehouseController {
             }
             even = !even;
         }
-
     }
 
     /**
@@ -159,7 +158,6 @@ public class WarehouseController {
 
         ObstacleGrid.add(grid);
     }
-
 
     /**
      * @brief is drawing the spreadsheet-like grid to represent the tiles
@@ -236,7 +234,6 @@ public class WarehouseController {
         }
 
 
-
         // Set this property only once, warehousePane exists throughout the whole program life so
         // without check, we would set property multiple times and get not desired behavior
         if(!RuntimePropsSet){
@@ -272,7 +269,7 @@ public class WarehouseController {
 
         }
 
-        //Here we calculate traveldistances for different situations
+        //Here we calculate travel distances for different situations
         _horizontalShelfStep = rectWidth/2 + stepGrid/2;
         _verticalShelfStep = rectHeight/2 + stepGrid/2;
     }
@@ -281,9 +278,9 @@ public class WarehouseController {
      * @brief draw parking and Resupply areas on the pane (grey squares
      * @param warehousePane
      */
-    public static void CreateResuplyParkingArea(Pane warehousePane){
-        if(_resuplyArea != null)
-            warehousePane.getChildren().removeAll(_resuplyArea);
+    public static void CreateResupplyParkingArea(Pane warehousePane){
+        if(_resupplyArea != null)
+            warehousePane.getChildren().removeAll(_resupplyArea);
         if(_parkingArea != null)
             warehousePane.getChildren().removeAll(_parkingArea);
 
@@ -292,14 +289,14 @@ public class WarehouseController {
         double canvasWidth = warehousePane.getWidth();
 
         //create Resupply area rectangle - the right one
-        Rectangle ResuplyArea = new Rectangle(canvasWidth-70, canvasHeight-20, 70, 20);
+        Rectangle ResupplyArea = new Rectangle(canvasWidth-70, canvasHeight-20, 70, 20);
 
         //set parameters of the rectangle and add it to pane
-        ResuplyArea.setStroke(Color.BLACK);
-        ResuplyArea.setFill(Color.DARKGREY);
-        _resuplyArea = ResuplyArea;
-        warehousePane.getChildren().add(_resuplyArea);
-        _resuplyArea.toBack();
+        ResupplyArea.setStroke(Color.BLACK);
+        ResupplyArea.setFill(Color.DARKGREY);
+        _resupplyArea = ResupplyArea;
+        warehousePane.getChildren().add(_resupplyArea);
+        _resupplyArea.toBack();
 
 
         //create ParkingArea rectangle - the left one
@@ -334,7 +331,7 @@ public class WarehouseController {
 
         int x = 5;
 
-        for(int counter = 0; counter <= howMany; counter++ ){
+        for(int counter = 0; counter < howMany; counter++ ){
             TrolleyGrid trolley = new TrolleyGrid(x, canvasHeight-15, 10, 10);
             //TrolleyGrid trolley = new TrolleyGrid(x, canvasHeight-30, 10, 10);
             trolley.setFill(Color.CORAL);
@@ -363,7 +360,6 @@ public class WarehouseController {
                 }
             });
 
-
             //store trolley and draw it
             Trolleys.add(trolley);
             warehousePane.getChildren().add(trolley);
@@ -386,19 +382,9 @@ public class WarehouseController {
         Trolleys.get(id).boundedCart = cart;
     }
 
-
-    /*
-    systém obsahuje vlastní hodiny, které lze nastavit na výchozí hodnotu a různou rychlost
-    po načtení mapy a obsahu skladu začne systém zobrazovat zpracování jednotlivých požadavků (způsob zobrazení je na vaší invenci, postačí značka, kolečko, ...)
-    symbol vozíku se postupně posunuje podle aktuálního času a požadavků (aktualizace zobrazení může být např. každých N sekund); pohyb spoje na trase je tedy simulován
-    po najetí/kliknutí na symbol vozíku se zvýrazní trasa v mapě a zobrazí jeho aktuální náklad
-     */
-
 /** ######################################################################################### */
 
 /** ######################################################################################### */
-
-
 
     public static void AddTrolleyToolTip(){
 
@@ -428,6 +414,11 @@ public class WarehouseController {
     }
 
 
+    /**
+     * Actualizes tooltip for single shelf
+     * @param row
+     * @param col
+     */
     public static void ActualizeTooltip(int row, int col){
         Rectangle shelf = rects.get((_controlledWarehouse.getRows()) *col + row);
         Tooltip newToolTip = new Tooltip(_controlledWarehouse.PrintGoods(row,col));
@@ -472,7 +463,9 @@ public class WarehouseController {
         }
     }
 
-
+    /**
+     * Class represent Grid with its indexes in warehouse
+     */
     public static class BlockableGrid extends Rectangle{
         public int _index_x;
         public int _index_y;
@@ -487,6 +480,9 @@ public class WarehouseController {
         }
     }
 
+    /**
+     * Class represents Trolley and stores additional needed properties
+     */
     public static class TrolleyGrid extends Rectangle{
         public ShoppingCart boundedCart;
         public List<Line> _route;

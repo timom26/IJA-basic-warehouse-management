@@ -27,9 +27,7 @@ public class ZoomController {
 
             double zoomWhere = ((ScrollEvent) event).getDeltaY();
 
-            // Default bounds
-            // 610
-            // 350
+            // Default bounds 610 : 350
             if (zoomWhere > 0){
 
                 content.setMinWidth(1220);

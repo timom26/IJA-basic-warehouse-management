@@ -18,6 +18,12 @@ import java.util.List;
 
 public class TrolleyController {
 
+    /**
+     * @brief change position of a trolley
+     * @param trolleyId id of given trolley
+     * @param x x coordinate to move by
+     * @param y y coordinate to move by
+     */
     public static void MoveTrolley(int trolleyId, int x, int y){
         if(WarehouseController.Trolleys.size() < trolleyId)
             return;
@@ -26,6 +32,12 @@ public class TrolleyController {
         movable.setY(movable.getY()+y);
     }
 
+    /**
+     * @brief first initialisation of position of the given trolley
+     * @param trolleyId id of given trolley
+     * @param x x coordinate of Pane
+     * @param y y coordinate of Pane
+     */
     public static void PlaceTrolley(int trolleyId, int x, int y){
         if(WarehouseController.Trolleys.size() < trolleyId)
             return;
@@ -34,6 +46,12 @@ public class TrolleyController {
         movable.setY(y);
     }
 
+    /**
+     * @brief change position of a trolley to a given direction by a single tile size
+     * @param trolley id of trolley to be shifted
+     * @param unit graphical shift
+     * @param where direction of travel
+     */
     public static void MoveTrolleyByUnit(Rectangle trolley, WarehouseController.UnitOfShift unit, WarehouseController.Direction where){
         switch (where){
             case left:
@@ -51,12 +69,18 @@ public class TrolleyController {
         }
     };
 
+    /**
+     * @brief help function to calculate graphical shift of a given trolley
+     * @param xFrom
+     * @param yFrom
+     * @param xTo
+     * @param yTo
+     * @return
+     */
     public static WarehouseController.UnitOfShift GetMovementUnit(int xFrom, int yFrom, int xTo, int yTo){
         int moduloFromX = (xFrom+1)%4;
         int moduloToX = (xTo+1)%4;
 
-        //To discuss with teammate what indexes we allow
-        //yFrom%(_controlledWarehouse.getRows()+1);
         int moduloFromY = (yFrom+1)%(WarehouseController._controlledWarehouse.getRows()+1);
         int moduloToY = (yTo+1)%(WarehouseController._controlledWarehouse.getRows()+1);
         boolean Parking = yTo == WarehouseController._controlledWarehouse.getRows()+1 ||
@@ -77,7 +101,9 @@ public class TrolleyController {
             }
         }
         else {
-            if(moduloToY == 0 || moduloFromY == 0 || Parking)
+            if(Parking)
+                return WarehouseController.UnitOfShift.gridSize;
+            else if(moduloToY == 0 || moduloFromY == 0)
                 return WarehouseController.UnitOfShift.shelfGridHeight;
             else
                 return WarehouseController.UnitOfShift.shelfHeight;
@@ -94,6 +120,7 @@ public class TrolleyController {
      * @param yTo
      */
     public static void MoveTrolleyFromTo(int trolleyId, int xFrom, int yFrom, int xTo, int yTo){
+        /** JavaFX things cannot be updated outside JavaFX thread */
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -123,7 +150,7 @@ public class TrolleyController {
     }
 
     /**
-     *
+     * @brief show route graphically as a line
      * @param coordList contains route to print
      * @param warehousePane Pane
      * @param trolley Rectangle
@@ -168,11 +195,10 @@ public class TrolleyController {
                 LineStartY = LineStartY + length.measure;
             }
 
-            //Line RouteChunk = new Line(LineStartX, LineStartY, LineStartX+lenght.measure, LineStartY+lenght.measure);
             RouteChunk.setStroke(Color.BLUE);
             RouteChunk.setStrokeWidth(5);
             warehousePane.getChildren().add(RouteChunk);
-            //RouteChunk.toBack();
+            RouteChunk.toFront();
             trolley._route.add(RouteChunk);
 
             previous_x = p.x;
@@ -180,7 +206,11 @@ public class TrolleyController {
         }
     }
 
+    /** @brief function is called to redraw a graphical route, when the route was changed
+     * @param trolleyId
+     */
     public static void ActualizeRoute(int trolleyId){
+        /** JavaFX things cannot be updated outside JavaFX thread */
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

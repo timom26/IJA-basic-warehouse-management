@@ -28,7 +28,6 @@ public class Read {
         {
             File file=new File("data/warehouse.txt");
             Scanner sc = new Scanner(file);     //file to be scanned
-            // while (sc.hasNext())        //returns true if and only if scanner has another token
             int rows = Integer.parseInt(sc.next());
             int cols = Integer.parseInt(sc.next());
 
@@ -96,8 +95,6 @@ public class Read {
                         allGoods.add(o);
                     }
 
-
-
                 }while(sc.hasNext(",") && sc.next().contentEquals(",")); // sanity check
 
             }
@@ -112,10 +109,17 @@ public class Read {
     }
 
 
-    //TODO accept as an agrument only warehouse struct
+    /**
+     * @brief takes warehouse, reads 'requests.txt' and
+     * based on it, creates requests for each trolley found
+     * in 'requests.txt'
+     *
+     * @param wareHouse list representing warehouse
+     * @param allGoods list of all goods
+     * @return True if successful, false if exception occured
+     */
     public static boolean ReadRequests(List wareHouse, List allGoods, List Indexes, int rowsMax, int colsMax)
     {
-        //TODO here we should already consider cart postion and choose next shelf to pick from accordingly
         try
         {
             File file = new File("data/requests.txt");
@@ -134,33 +138,22 @@ public class Read {
                     amount = Integer.parseInt(sc.next());
 
                     String finalProductName = productName;
-                    //Optional hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst();
-                    Object hell;
+                    Object tryToGet;
 
                     if(allGoods.stream().anyMatch(o -> (((Goods) o).getName().equals(finalProductName)))){
-                        hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst().get();
-                        System.out.println(((Goods) hell).getName());
-                        System.out.println("бутылочка");
+                        tryToGet = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst().get();
 
                         for(int row = 0; row <rowsMax; row++ ){
                             for(int coll = 0; coll < colsMax; coll++ ){
-                                if(((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) hell))){
+                                if(((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) tryToGet))){
                                     AllCarts.AddGoodsIndexToCart(trolleyID, row, coll, productName, amount);
-                                    //return true; //TODO return list or struct or what else
-                                    // TODO but Really I should make a Class for this thing
                                 };
                             }
                         }
-
                     }
-                    else {
-                        System.out.println("лютики");
-                    }
-
                 }while(sc.hasNext(",") && sc.next().contentEquals(",")); // sanity check
 
             }
-
 
             return true;
         }
@@ -171,10 +164,24 @@ public class Read {
         }
     }
 
+    /**
+     * @brief Reads requests stored in String for trolley given
+     * by TrolleyID
+     *
+     * @param request string to scan
+     * @param trolleyID
+     * @param wareHouse list representing warehouse
+     * @param allGoods list of all goods
+     * @param rowsMax
+     * @param colsMax
+     * @param Reset true - clears previous requests, else it keeps them as the were
+     * @return
+     */
     public static boolean RequestViaGUI(String request, int trolleyID, List wareHouse, List allGoods, int rowsMax, int colsMax, boolean Reset){
         Scanner field = new Scanner(request);
         CartStruct AllCarts = new CartStruct();
-        //for now
+
+        //delete orders given before
         if(Reset){
             AllCarts.Reset();
             AllCarts.AddOrder(trolleyID);
@@ -191,26 +198,18 @@ public class Read {
                 amount = Integer.parseInt(field.next());
 
                 String finalProductName = productName;
-                //Optional hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst();
-                Object hell;
+                Object tryToGet;
 
                 if (allGoods.stream().anyMatch(o -> (((Goods) o).getName().equals(finalProductName)))) {
-                    hell = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst().get();
-                    System.out.println(((Goods) hell).getName());
-                    System.out.println("бутылочка");
+                    tryToGet = allGoods.stream().filter(o -> (((Goods) o).getName().equals(finalProductName))).findFirst().get();
 
                     for (int row = 0; row < rowsMax; row++) {
                         for (int coll = 0; coll < colsMax; coll++) {
-                            if (((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) hell))) {
+                            if (((Shelf) ((List) wareHouse.get(row)).get(coll)).containsGoods(((Goods) tryToGet))) {
                                 AllCarts.AddGoodsIndexToCart(trolleyID, row, coll, productName, amount);
-                                //return true; //TODO return list or struct or what else
-                                // TODO but Really I should make a Class for this thing
                             }
                         }
                     }
-
-                } else {
-                    System.out.println("лютики");
                 }
             }
             return true;

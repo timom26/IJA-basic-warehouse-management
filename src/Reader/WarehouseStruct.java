@@ -64,7 +64,6 @@ public class WarehouseStruct {
      * @return cols
      */
     public int getCols() {
-        //return this.cols = cols + cols/2 + (cols%2 == 0 ? 1 : 2);
         return cols;
     }
 
@@ -77,7 +76,7 @@ public class WarehouseStruct {
     }
 
     public int getMax_x() {
-        return cols + cols/2 + (cols%2 == 0 ? 1 : 2);
+        return cols + cols - (cols%2 == 0 ? 2 : 1);
     }
 
     public int getMax_y() {
@@ -130,8 +129,7 @@ public class WarehouseStruct {
     }
 
 
-    public List<Point> getAStarCoords(Point startPoint, Point endPoint, String operation){
-        this.setCols(50);
+    public List<Point> getAStarCoords(Point startPoint, Point endPoint, String operation){ ;
         System.out.println("\n\nStarting getastar with parameters" + startPoint + endPoint+operation);
 
         //it is a point of a shelf,
@@ -241,7 +239,7 @@ public class WarehouseStruct {
      * list and return them, if they are walkable to(not blocked)**/
     public List<Point> getAStarNeighbors(Point point){
 
-        if (point.x > this.getCols() || point.x < -1 || point.y < -1 || point.y > this.getRows() + 1){
+        if (point.x > this.getMax_x() || point.x < -1 || point.y < -1 || point.y > this.getRows() + 1){
             throw new InvalidParameterException("the point ot out of warehouse bounds");
         }
 
@@ -259,7 +257,7 @@ public class WarehouseStruct {
         boolean p4_set = false;
 
         //if in col && not on the edge, get a tile from the other side of col
-        if (point.x > 0 && point.x < this.getCols() && point.y > -1 && point.y < this.getRows()){
+        if (point.x > 0 && point.x < this.getMax_x() && point.y > -1 && point.y < this.getRows()){
             //System.out.print("standard col");
             p1_set = true;
             p2_set = true;
@@ -287,7 +285,7 @@ public class WarehouseStruct {
             p3.y = point.y+1;//down
         }
         //if is in first or last col, add only up or down
-        if ((point.x == -1 || point.x == this.getCols()) && point.y > -1 && point.y < this.getRows()){
+        if ((point.x == -1 || point.x == this.getMax_x()) && point.y > -1 && point.y < this.getRows()){
             //System.out.print("   first or last col   ");
 
             p2_set = true;
@@ -298,7 +296,7 @@ public class WarehouseStruct {
             p3.y = point.y+1;//down
         }
 
-        if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)    && point.x >= 0  && point.x <= this.getCols()){
+        if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)    && point.x >= 0  && point.x <= this.getMax_x()){
             //in a horizontal walkway, and can add a neighbour to the left
             //System.out.print("  horisontal to left  ");
 
@@ -306,7 +304,7 @@ public class WarehouseStruct {
             p1.y = point.y;
             p1_set = true;
         }
-        if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)  && point.x >= -1   && point.x != this.getCols()){
+        if((point.y == -1  ||  point.y == this.getRows() || point.y == this.getRows() + 1)  && point.x >= -1   && point.x != this.getMax_x()){
             //in a horizontal walkway, and can add a neighbour to the right
             //System.out.print("  horisontal to right  ");
 

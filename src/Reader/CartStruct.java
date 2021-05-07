@@ -11,6 +11,9 @@ import store.ShoppingCart;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Stores all orders issued for trolley in one place
+ */
 public class CartStruct {
 
     public static List<Trolley> allOrders;
@@ -43,7 +46,7 @@ public class CartStruct {
             return true;
         }
         else
-            return false; // trolley exist, cannot create new
+            return false; //trolley exist, cannot create new
     }
 
     public void AddCart(ShoppingCart toAdd){
@@ -51,12 +54,18 @@ public class CartStruct {
     }
 
 
-    /*Boolean*/
+    /**
+     * Used for inserting new index where goods where found
+     * @param id
+     * @param row
+     * @param coll
+     * @param GoodsName
+     * @param amount
+     */
     public void AddGoodsIndexToCart(int id, int row, int coll, String GoodsName, int amount){
         Trolley toAdd = allOrders.get(id-1);
 
         toAdd.AddIndex(row, coll, GoodsName, amount);
-
     }
 
     public Trolley GetCart(int id){
@@ -65,6 +74,9 @@ public class CartStruct {
 
 
     //************************************************************************************//
+    /**
+     * Stores orders for one trolley
+     */
     public class Trolley{
         public List<targetIndex> allWaypoints;
 
@@ -73,7 +85,6 @@ public class CartStruct {
         }
 
         public void AddIndex(int row, int coll, String GoodsName, int amount){
-            /* if(allWaypoints.contains(o -> ((Index) o).GoodsName.contentEquals(GoodsName))){ } */
             /** check if goods are already in requsts and add new point */
             if(allWaypoints.stream().anyMatch(o -> o.GoodsName.equals(GoodsName))){
                 targetIndex tmp = allWaypoints.stream().filter(o -> o.GoodsName.contentEquals(GoodsName)).findFirst().get();
@@ -98,6 +109,9 @@ public class CartStruct {
         }
 
         //************************************************************************************//
+        /**
+         * Stores all indexes where issued Goods were found
+         */
         public class targetIndex {
             private String GoodsName;
             private int amount; //TODO
@@ -128,11 +142,19 @@ public class CartStruct {
                 return points.get(0);
             }
 
+            /**
+             * Returns point from "points" Array, null if out of bounds
+             * @param index
+             * @return
+             */
             public OnePoint GetPoint(int index) {
                 return points.size() > index ? points.get(index) : null;
             }
 
             //************************************************************************************//
+            /**
+             * Represents single point(shelf) where goods were found
+             */
             public class OnePoint{
                 private int x;
                 private int y;

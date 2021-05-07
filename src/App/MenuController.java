@@ -31,10 +31,10 @@ public class MenuController {
     }
 
     /**
-     * @brief initialize fmxl field to default values
+     * @brief initialize fmxl fields to default values
+     * find out more about why it works https://stackoverflow.com/a/37447039
      */
     public void initialize() {
-        //https://stackoverflow.com/a/37447039
         ObservableList<String> options = FXCollections.observableArrayList(
                 "Trolley 1", "Trolley 2", "Trolley 3", "Trolley 4", "Trolley 5");
         _chooseTrolley.setValue("Trolley 1");
@@ -50,7 +50,8 @@ public class MenuController {
     }
 
     /**
-     * @brief ask reader to load single Request ( + some checks )
+     * @brief Implements submit button
+     * Loads single request for trolley and closes the window
      * @param event
      */
     public void LoadRequests(ActionEvent event){

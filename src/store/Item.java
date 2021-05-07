@@ -12,8 +12,6 @@ public class Item {
 
     private String name;
     private LocalDate date;
-    // just a reference to Box where item belongs,
-    // should be smth like pointer in C if I understand it
     private Goods ref;
 
     /**
@@ -35,11 +33,13 @@ public class Item {
      * @return goodstype of the item
      */
     public Goods goods() {
-        //boolean hell = ija.ija2020.homework1.store.StoreGoods.class.equals(this);
         return ref;
-        //return null;
     }
 
+    /**
+     * Sell item
+     * @return
+     */
     public boolean sell() {
         if(ref != null){
             return ref.remove(this);
