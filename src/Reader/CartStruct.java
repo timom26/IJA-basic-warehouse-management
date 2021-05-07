@@ -1,8 +1,13 @@
+/**
+ * @author Timotej Ponek xponek00
+ * @author Timotej Kamensky xkamen24
+ * @copyright Brno university of technology, faculty of computer science, Czechia.
+ * @brief implementation of a Cart management system
+ */
 package Reader;
 
 import store.ShoppingCart;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 

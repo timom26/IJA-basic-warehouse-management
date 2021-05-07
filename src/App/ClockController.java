@@ -1,8 +1,14 @@
+/**
+ * @author Timotej Ponek xponek00
+ * @author Timotej Kamensky xkamen24
+ * @copyright Brno university of technology, faculty of computer science, Czechia.
+ * @brief speed of simulation management (speed is given to trolleys), routine of a cart
+ */
+
 package App;
 
 import Reader.CartStruct;
 import Reader.WarehouseStruct;
-import javafx.application.Platform;
 import store.Shelf;
 import store.ShoppingCart;
 
@@ -13,18 +19,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-
-import static App.TrolleyController.*;
 
 public class ClockController {
-
-    //static ScheduledExecutorService defaultExecService;
-
     private static boolean _pause = false;
     private static int _delay = 1000;
     private static List<ScheduledExecutorService> _allExecutors;
-
 
     // instance properties
     private CartStruct.Trolley _trolley;
@@ -96,7 +95,7 @@ public class ClockController {
         _orderIndex = 0;
 
         //This will be moved to Controller class in production
-        WarehouseController.BoundCartToTrolley(id, _cart);
+        WarehouseController.BindCartToTrolley(id, _cart);
 
         Boolean inMotion = false;
         _currentShelfToGo = trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
@@ -127,7 +126,7 @@ public class ClockController {
 //        if(_cartId == 0)
 //            MoveTrolley(_cartId, +20, -20);
 //        else
-            PlaceTrolley(_cartId, 5, 315);
+            TrolleyController.PlaceTrolley(_cartId, 5, 315);
 
 
         futureTask = _defaultExecutor.scheduleAtFixedRate(this::TrolleyRoutine, (_cartId - 1) *100, _delay, TimeUnit.MILLISECONDS);
@@ -136,6 +135,14 @@ public class ClockController {
 
     }
 
+    /**
+     * @brief function defines, what should each trolley tell the cart to do.
+     *
+     * Generally:
+     *
+     * For each goal: go to target, pickup, go to next target etc., and get back at the end.
+     * If got full while doing so, go empty yourself.
+     */
     private void TrolleyRoutine(){
         /** JavaFX things cannot be updated outside JavaFX thread */
                     if (!_pause && !_defaultExecutor.isTerminated()) {
@@ -149,25 +156,29 @@ public class ClockController {
                                 _cart.coordIndex = 0;
                                 _cart.planRoute(_cart.goal_x, _cart.goal_y);
 
-                                //reset these
+                                //reset parameters (we get a new route from recalculation,
+                                // so it is basically a totally new route and we have to reset these indexes)
                                 _atWaypoint = 0;
+                                _WaypointSize = _cart.coordList.size() - 1;
+
+                                //if we are blocked, we set these so sheduledController won't shut itself
                                 if(_cart.coordList.size() == 0)
                                     _blocked = true;
                                 else
                                     _blocked = false;
 
-                                _WaypointSize = _cart.coordList.size() - 1;
                                 return;
                             }
 
-                            //int toGoX, toGoY
-
+                            //get the next tile to go to
                             int toGoX = _cart.coordList.get(_atWaypoint).x;
                             int toGoY = _cart.coordList.get(_atWaypoint).y;
 
                             //convenient method
-                            MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
+                            //Note: this call will move it only by a single tile!
+                            TrolleyController.MoveTrolleyFromTo(_cartId, _cart.coord_x, _cart.coord_y, toGoX, toGoY);
 
+                            //save, where did you just move
                             _cart.coord_x = _cart.coordList.get(_atWaypoint).x;
                             _cart.coord_y = _cart.coordList.get(_atWaypoint).y;
 
@@ -262,13 +273,13 @@ public class ClockController {
                             }
 
                             _orderIndex += 1;
+                            //if there is another target to go to:
                             if (_orderIndex < _trolley.allWaypoints.size()) {
 
                                 _tryNext = 0; //reset index search
                                 _remainingToGet = _trolley.allWaypoints.get(_orderIndex).getIndexAmount(); //new amount to get
                                 _currentShelfToGo = _trolley.allWaypoints.get(_orderIndex).GetFirstPoint();
                                 _cart.goal_x = _currentShelfToGo.getY(); _cart.goal_y = _currentShelfToGo.getX();
-
 
                                 from = new Point(_cart.coord_x, _cart.coord_y);
                                 where = new Point(_cart.goal_x, _cart.goal_y);

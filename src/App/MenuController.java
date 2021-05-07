@@ -1,19 +1,18 @@
+/**
+ * @author Timotej Ponek xponek00
+ * @author Timotej Kamensky xkamen24
+ * @copyright Brno university of technology, faculty of computer science, Czechia.
+ * @brief Menu controller
+ */
+
 package App;
 import Reader.Read;
-import Reader.WarehouseStruct;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class MenuController {
 
@@ -31,14 +30,15 @@ public class MenuController {
         super();
     }
 
-    /** POGU method // handle data once the fields are injected */
+    /**
+     * @brief initialize fmxl field to default values
+     */
     public void initialize() {
         //https://stackoverflow.com/a/37447039
         ObservableList<String> options = FXCollections.observableArrayList(
                 "Trolley 1", "Trolley 2", "Trolley 3", "Trolley 4", "Trolley 5");
         _chooseTrolley.setValue("Trolley 1");
         _chooseTrolley.setItems(options);
-        //_reset.setTooltip(new Tooltip("If checked, previously isued orders will be cancelled"));
 
         if(WarehouseController._controlledWarehouse != null){
             this._namesOfGoods = FXCollections.observableArrayList(WarehouseController._controlledWarehouse.GetGoodsNames());
@@ -49,17 +49,15 @@ public class MenuController {
 
     }
 
-//    public void SetGoods(WarehouseStruct warehouse){
-//        //this._namesOfGoods = new ArrayList<>();
-//        this._namesOfGoods = warehouse.GetGoodsNames();
-//    }
-
-
+    /**
+     * @brief ask reader to load single Request ( + some checks )
+     * @param event
+     */
     public void LoadRequests(ActionEvent event){
-        /** char implicitly casts itself to int */
         if(WarehouseController._controlledWarehouse == null)
             return;
-        Read.RequestViaGUI(_loadedRequests.getText(),
+        Read.RequestViaGUI(
+                _loadedRequests.getText(),
                 Character.getNumericValue(_chooseTrolley.getValue().toString().charAt(8)),
                 WarehouseController._controlledWarehouse.shelves,
                 WarehouseController._controlledWarehouse.goods,
@@ -67,7 +65,7 @@ public class MenuController {
                 WarehouseController._controlledWarehouse.getCols(),
                 _reset.isSelected()
         );
-        //menu.close();
+
         //close action
         ((Stage)(((Button)event.getSource()).getScene().getWindow())).close();
         ClockController.Pause();

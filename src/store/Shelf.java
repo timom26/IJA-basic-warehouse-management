@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief assignment of java application for basic warehouse management system
+ * @brief implementation of a single shelf
  */
 package store;
 import java.util.ArrayList;
@@ -36,9 +36,6 @@ public class Shelf {
         if(containsGoods(goods)){
             Goods Remover = content.get(content.indexOf(goods));
             return Remover.getItemAndRemove();
-//            int a = 99999;
-//            int c = a + 222;
-            //Remover.remove(g;
         }
 
         return null;
@@ -53,7 +50,6 @@ public class Shelf {
             All.append(TypeofGoods.getName()).append(' ').append(TypeofGoods.size()).append('\n');
             size += TypeofGoods.size();
         }
-        // TODO
         return (size == 0) ? "Empty" : All.toString();
     }
 

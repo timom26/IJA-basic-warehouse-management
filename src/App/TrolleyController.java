@@ -1,8 +1,12 @@
+/**
+ * @author Timotej Ponek xponek00
+ * @author Timotej Kamensky xkamen24
+ * @copyright Brno university of technology, faculty of computer science, Czechia.
+ * @brief implementation of trolley (that is: guiding struct for a single Shopping Cart)
+ */
 package App;
 
 import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -55,6 +59,8 @@ public class TrolleyController {
         //yFrom%(_controlledWarehouse.getRows()+1);
         int moduloFromY = (yFrom+1)%(WarehouseController._controlledWarehouse.getRows()+1);
         int moduloToY = (yTo+1)%(WarehouseController._controlledWarehouse.getRows()+1);
+        boolean Parking = yTo == WarehouseController._controlledWarehouse.getRows()+1 ||
+                        yFrom == WarehouseController._controlledWarehouse.getRows()+1;
 
         if(yFrom == yTo){
             switch (moduloFromX+moduloToX){
@@ -71,7 +77,7 @@ public class TrolleyController {
             }
         }
         else {
-            if(moduloToY == 0 || moduloFromY == 0)
+            if(moduloToY == 0 || moduloFromY == 0 || Parking)
                 return WarehouseController.UnitOfShift.shelfGridHeight;
             else
                 return WarehouseController.UnitOfShift.shelfHeight;
@@ -166,7 +172,7 @@ public class TrolleyController {
             RouteChunk.setStroke(Color.BLUE);
             RouteChunk.setStrokeWidth(5);
             warehousePane.getChildren().add(RouteChunk);
-            RouteChunk.toBack();
+            //RouteChunk.toBack();
             trolley._route.add(RouteChunk);
 
             previous_x = p.x;
@@ -188,6 +194,7 @@ public class TrolleyController {
                         WarehouseController._warehousePane,
                         tmp,
                         tmp.boundedCart.coordIndex);
+                tmp.toFront();
                 return;
             }
         });

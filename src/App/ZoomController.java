@@ -1,3 +1,9 @@
+/**
+ * @author Timotej Ponek xponek00
+ * @author Timotej Kamensky xkamen24
+ * @copyright Brno university of technology, faculty of computer science, Czechia.
+ * @brief implements methods for zooming on a warehouse
+ */
 package App;
 
 import javafx.scene.control.ScrollPane;
@@ -6,6 +12,10 @@ import javafx.scene.layout.Pane;
 
 public class ZoomController {
 
+    /**
+     * Sets Scroll event handler actions to zoom correctly
+     * @param MainPane ScrollPane to set
+     */
     public static void SetProperties(ScrollPane MainPane){
 
         MainPane.setScaleShape(true);

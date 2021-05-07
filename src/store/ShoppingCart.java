@@ -2,7 +2,7 @@
  * @author Timotej Ponek
  * @author Timotej Kamensky
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief assignment of java application for basic warehouse management system
+ * @brief implementation of a single shopping cart
  */
 package store;
 

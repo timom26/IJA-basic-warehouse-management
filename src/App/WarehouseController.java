@@ -2,12 +2,11 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief assignment of java application for basic warehouse management system
+ * @brief Controller of a single warehouse
  */
 
 package App;
 
-import Reader.CartStruct;
 import Reader.WarehouseStruct;
 import store.ShoppingCart;
 
@@ -20,11 +19,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class WarehouseController {
     private static List<Rectangle> rects;
@@ -59,6 +55,9 @@ public class WarehouseController {
         down
     }
 
+    /**
+     * @brief enum of all graphical units needed for calculation of unitOfShift
+     */
     public static enum UnitOfShift {
         shelfWidth(rectWidth),
         shelfHeight(rectHeight),
@@ -73,27 +72,29 @@ public class WarehouseController {
         {
             this.measure = val;
         }
-
-//        static {
-//            for (UnitOfShift e : values()) {
-//                BY_VALUE.put(e, e.);
-//            }
-//        }
-//        private static final Map<String, UnitOfShift> BY_LABEL = new HashMap<>();
-
     }
 
-
+    /**
+     * @brief Set controlled warehouseStruct to its controller
+     * @param wareHouse
+     */
     public static void SetWarehouse(WarehouseStruct wareHouse){
         _controlledWarehouse = wareHouse;
     }
 
+    /**
+     * @brief main function for the display panel. Get data of the warehouse and use it to draw main pane
+     * @param rows
+     * @param cols
+     * @param warehousePane
+     */
     public static void PaneDraw(int rows, int cols, Pane warehousePane){
         _warehousePane = warehousePane;
 
-        CreateResuplyArea(warehousePane);
+        CreateResuplyParkingArea(warehousePane);
         CreateTrolleys(warehousePane, 5);
 
+        //if any rectangles present, delete them, and set the list of them to be empty
         if(rects != null)
             warehousePane.getChildren().removeAll(rects);
         rects = new ArrayList<Rectangle> ();
@@ -104,8 +105,7 @@ public class WarehouseController {
         step = 40;
         stepGrid = step/2;
         double stepY = step;
-        /** total space in between shelves on x axis */
-        double stepX = step*((cols-1)/2);
+        double stepX = step*((cols-1)/2); // total space in between shelves on x axis
 
         rectHeight = (canvasHeight - step)/rows;
         rectWidth = (canvasWidth - stepX - step )/cols;
@@ -126,10 +126,14 @@ public class WarehouseController {
             even = !even;
         }
 
-        System.out.println(rows);
-        System.out.println(cols);
     }
 
+    /**
+     * @brief help function to set properties of square: eg black colour on blocked square
+     * @param grid
+     * @param index_x
+     * @param index_y
+     */
     private static void SetGridProperties(BlockableGrid grid, int index_x, int index_y){
         grid.setFill(Color.TRANSPARENT);
         grid.setStroke(Color.LIGHTBLUE);
@@ -140,12 +144,12 @@ public class WarehouseController {
         grid.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event) {
-                if(!event.isShiftDown()) {
+                if(!event.isShiftDown()) {//add blockage, colour black
                     if (grid.getFill().equals(Color.TRANSPARENT)){
                         _controlledWarehouse.addBlockage(grid._index_x, grid._index_y);
                         grid.setFill(Color.BLACK);
                     }
-                    else{
+                    else{//remove blockage, colour transparent
                         grid.setFill(Color.TRANSPARENT);
                         _controlledWarehouse.removeBlockage(grid._index_x, grid._index_y);
                     }
@@ -157,11 +161,18 @@ public class WarehouseController {
     }
 
 
+    /**
+     * @brief is drawing the spreadsheet-like grid to represent the tiles
+     * @param rows
+     * @param cols
+     * @param warehousePane
+     */
     public static void DrawGrid(int rows, int cols, Pane warehousePane){
         if(ObstacleGrid != null)
             warehousePane.getChildren().removeAll(ObstacleGrid);
         ObstacleGrid = new ArrayList<BlockableGrid> ();
 
+        //get canvas dimensions
         double canvasHeight = warehousePane.getHeight() - 20;
         double canvasWidth = warehousePane.getWidth();
 
@@ -173,6 +184,7 @@ public class WarehouseController {
 
         boolean even = false;
 
+        //this for-loop is drawing space between the shelves
         for (double x = 0; x < maxX; x += (even ? (2*rectWidth) + stepGrid : stepGrid)){
             for (double y = stepGrid; y < maxY; y += rectHeight){
                 BlockableGrid grid = new BlockableGrid(x, y, stepGrid, rectHeight);
@@ -194,6 +206,7 @@ public class WarehouseController {
         even = false;
         boolean touchingShelves = false; // for drawing grid that touches shelves
         int countToTWO = 2;
+        //this for-loop is drawing horizontal pathways
         for (double y = 0; y < canvasHeight; y += canvasHeight - stepGrid){
             for (double x = 0; x < canvasWidth; x += (even ? rectWidth : stepGrid)){
                 BlockableGrid grid;
@@ -259,40 +272,56 @@ public class WarehouseController {
 
         }
 
-        /**Here we calculate traveldistances for different situations */
+        //Here we calculate traveldistances for different situations
         _horizontalShelfStep = rectWidth/2 + stepGrid/2;
         _verticalShelfStep = rectHeight/2 + stepGrid/2;
     }
 
-    public static void CreateResuplyArea(Pane warehousePane){
+    /**
+     * @brief draw parking and Resupply areas on the pane (grey squares
+     * @param warehousePane
+     */
+    public static void CreateResuplyParkingArea(Pane warehousePane){
         if(_resuplyArea != null)
             warehousePane.getChildren().removeAll(_resuplyArea);
         if(_parkingArea != null)
             warehousePane.getChildren().removeAll(_parkingArea);
 
+        //get canvas dimensions
         double canvasHeight = warehousePane.getHeight();
         double canvasWidth = warehousePane.getWidth();
 
+        //create Resupply area rectangle - the right one
         Rectangle ResuplyArea = new Rectangle(canvasWidth-70, canvasHeight-20, 70, 20);
-        ResuplyArea.setFill(Color.GREY);
+
+        //set parameters of the rectangle and add it to pane
+        ResuplyArea.setStroke(Color.BLACK);
+        ResuplyArea.setFill(Color.DARKGREY);
         _resuplyArea = ResuplyArea;
         warehousePane.getChildren().add(_resuplyArea);
+        _resuplyArea.toBack();
 
 
-        Rectangle ParkingArea = new Rectangle(0, canvasHeight-20, 300, 20);
+        //create ParkingArea rectangle - the left one
+        Rectangle ParkingArea = new Rectangle(0, canvasHeight-20,canvasWidth-70, 20);
+
+        //set parameters of the rectangle and add it to pane
         ParkingArea.setFill(Color.GREY);
         _parkingArea = ParkingArea;
         warehousePane.getChildren().add(_parkingArea);
+        _parkingArea.toBack();
     }
 
+    /**
+     * @brief function to create given amount of trolleys (max 10)
+     * @param warehousePane
+     * @param howMany
+     */
     public static void CreateTrolleys(Pane warehousePane, int howMany){
         if(howMany > 10){
             return; //we don't allow more than 10 trolleys
         }
         if(Trolleys != null){
-            //doesn't work
-            //warehousePane.getChildren().removeAll(Trolleys.stream().map(TrolleyGrid -> TrolleyGrid._route).collect(Collectors.toList()));
-            //warehousePane.getChildren().removeAll(Trolleys);
             for (TrolleyGrid t: Trolleys) {
                 if (t._route != null)
                     warehousePane.getChildren().removeAll(t._route);
@@ -315,35 +344,43 @@ public class WarehouseController {
                 public void handle(MouseEvent event) {
                     System.out.println("We here");
 
+                    //if the cart controller controls no trolley, do nothing
                     if(trolley.boundedCart == null)
                         return;
 
-                    if(trolley.isRoutePrinted) {
+                    //switch the display of the cartPath on/off according to current value
+                    if(trolley.isRoutePrinted) {//off
                         warehousePane.getChildren().removeAll(trolley._route);
                         trolley._route = new ArrayList<>();
                         trolley.isRoutePrinted = false;
                     }
-                    else{
+                    else{//on
                         trolley._route = new ArrayList<>();
                         TrolleyController.PrintRoute(trolley.boundedCart.coordList, warehousePane, trolley, trolley.boundedCart.coordIndex);
+                        trolley.toFront();
                         trolley.isRoutePrinted = true;
                     }
                 }
             });
 
-            //warehousePane.toFront(trolley);
 
+            //store trolley and draw it
             Trolleys.add(trolley);
             warehousePane.getChildren().add(trolley);
 
-            trolley.toFront();
+            trolley.toFront();//show the cart on top of all other stuff
 
-            x += 25;
+            x += 25;//shift to the next tile to draw next trolley
         }
     }
 
 
-    public static void BoundCartToTrolley(int id, ShoppingCart cart){
+    /**
+     * @brief bind shoppingCart to its controller (trolley)
+     * @param id id of trolley
+     * @param cart the cart to be bound
+     */
+    public static void BindCartToTrolley(int id, ShoppingCart cart){
         if(id >= Trolleys.size())
             return;
         Trolleys.get(id).boundedCart = cart;

@@ -2,25 +2,17 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief assignment of java application for basic warehouse management system
+ * @brief main
  */
 
 package App;
 
-import Reader.Read;
-import Reader.WarehouseStruct;
 import javafx.application.Application;
 
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import store.ShoppingCart;
-
-import java.util.ArrayList;
 
 public class Main extends Application {
 

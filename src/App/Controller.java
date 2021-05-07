@@ -2,7 +2,7 @@
  * @author Timotej Ponek xponek00
  * @author Timotej Kamensky xkamen24
  * @copyright Brno university of technology, faculty of computer science, Czechia.
- * @brief assignment of java application for basic warehouse management system
+ * @brief GUI buttons and their action implementation, speed changes
  */
 
 package App;
@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,18 +34,14 @@ public class Controller {
     //public ZoomablePane _zoomPane;
     public ScrollPane _scrollPane;
     public Pane warehousePane;
+    public TextField _state;
     private static WarehouseStruct _workplace;
     private List<ClockController> _inMotion;
     private boolean paused = false;
 
     /**
-     * serves as de-facto main in GUI.
-     *
-     * Asks for warehouse and its files (read from txt files)
-     * After that it generates a graphical interface to see current status
-     * of warehouse.
+     * @brief implements the left button "launch"
      */
-
     public void buttonLaunch() {
         // clear possible ongoing simulation
         ClockController.DispatchAll();
@@ -71,7 +68,12 @@ public class Controller {
 
     }
 
+    /**
+     * @brief implements the right button "Simulate"
+     */
     public void buttonSimulate() {
+        //we could click pause before Simulate
+        _state.textProperty().set(ClockController.get_pause() ? "Paused" : "Playing");
         if(_inMotion != null){
             //return, you have to click load first
             return;
@@ -85,7 +87,6 @@ public class Controller {
             _inMotion.add(tmp);
         }
         WarehouseController.AddTrolleyToolTip();
-
     }
 
     public List GetNamesOfGoodsForSpinner(){
@@ -109,31 +110,53 @@ public class Controller {
             //((MenuController) fxmlLoader.getController()).SetGoods(_workplace);
     }
 
+    /**
+     * @brief implements the button "pause"
+     */
     public void ButtonPause(){
         ClockController.Pause();
+        _state.textProperty().set(ClockController.get_pause() ? "Paused" : "Playing");
     }
 
-    /**
-     * Speed change functions
-     */
+    /********* Speed change functions ***************/
 
+    /**
+     * @brief change the time of single tick to 1000ms
+     */
     public void Speed1x(){
         ClockController.SetTime(1000);
         ClockController.UpdateTimer(_inMotion);
     }
 
+    /**
+     * @brief change the time of single tick to 500ms
+     */
     public void Speed2x(){
         ClockController.SetTime(500);
         ClockController.UpdateTimer(_inMotion);
     }
 
+    /**
+     * @brief change the time of single tick to 250ms
+     */
     public void Speed4x(){
         ClockController.SetTime(250);
         ClockController.UpdateTimer(_inMotion);
     }
 
+    /**
+     * @brief change the time of single tick to 125ms
+     */
     public void Speed8x(){
         ClockController.SetTime(125);
+        ClockController.UpdateTimer(_inMotion);
+    }
+
+    /**
+     * @brief change the time of single tick to 63ms
+     */
+    public void Speed16x(){
+        ClockController.SetTime(63);
         ClockController.UpdateTimer(_inMotion);
     }
 
